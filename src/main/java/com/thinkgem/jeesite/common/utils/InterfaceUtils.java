@@ -63,7 +63,7 @@ public class InterfaceUtils {
         }
     }
 
-	public void SendPostDemo(String urlPath,String param) throws IOException {
+	public void HttpPost(String urlPath,String param) throws IOException {
 		// 建立连接
 		URL url = new URL(urlPath);
 		HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();

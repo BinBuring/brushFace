@@ -69,8 +69,10 @@
 					<fmt:formatDate value="${device.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
 				<shiro:hasPermission name="brf:device:edit"><td>
-    				<a href="${ctx}/brf/device/form?id=${device.id}">修改</a>
+    				<a href="javaScript:;">状态查询</a>
+    				<a href="javaScript:;">人员授权</a>
 					<a href="${ctx}/brf/device/delete?id=${device.id}" onclick="return confirmx('确认要删除该设备吗？', this.href)">删除</a>
+					<a href="javaScript:;">设备同步</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>
