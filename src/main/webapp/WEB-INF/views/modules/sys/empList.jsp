@@ -93,9 +93,9 @@
 		</tr>
 		</thead>
 		<tbody>
-		<c:forEach items="${page.list}" var="user">
+		<c:forEach items="${page.list}" varStatus="status"  var="user">
 			<tr>
-				<td>${user.sernum}</td>
+				<td>${status.count}</td>
 				<td>${user.no}</td>
 				<td>${user.name}</td>
 				<td>${user.company.name}&nbsp;/&nbsp;${user.office.name}</td>

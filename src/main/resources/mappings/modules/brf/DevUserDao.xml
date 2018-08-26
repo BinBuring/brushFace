@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.brf.dao.DevUserDao">
+    
+	<sql id="devUserColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.dev_id AS "devId",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="devUserJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="DevUser">
+		SELECT 
+			<include refid="devUserColumns"/>
+		FROM brf_dev_user a
+		<include refid="devUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DevUser">
+		SELECT 
+			<include refid="devUserColumns"/>
+		FROM brf_dev_user a
+		<include refid="devUserJoins"/>
+		<where>
+			
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="devId != null and devId != ''">
+				AND a.dev_id = #{devId}
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DevUser">
+		SELECT 
+			<include refid="devUserColumns"/>
+		FROM brf_dev_user a
+		<include refid="devUserJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO brf_dev_user(
+			id,
+			user_id,
+			dev_id,
+			create_date,
+			create_by
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{devId},
+			#{createDate},
+			#{createBy.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE brf_dev_user SET 	
+			user_id = #{user.id},
+			dev_id = #{devId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM brf_dev_user
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

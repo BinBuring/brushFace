@@ -6,10 +6,12 @@ package com.thinkgem.jeesite.modules.sys.web;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,11 +23,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.OfficeService;
+import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
@@ -40,6 +44,8 @@ public class OfficeController extends BaseController {
 
 	@Autowired
 	private OfficeService officeService;
+	@Autowired
+	private SystemService systemService;
 	
 	@ModelAttribute("office")
 	public Office get(@RequestParam(required=false) String id) {
@@ -59,8 +65,11 @@ public class OfficeController extends BaseController {
 
 	@RequiresPermissions("sys:office:view")
 	@RequestMapping(value = {"list"})
-	public String list(Office office, Model model) {
-        model.addAttribute("list", officeService.findList(office));
+	public String list(Office office, Model model,HttpServletResponse response,HttpServletRequest request) {
+        List<Office> list = officeService.findList(office);
+        Page<Office> page = new Page<Office>();
+        page.setList(list);
+        model.addAttribute("page", page);
 		return "modules/sys/officeList";
 	}
 	
