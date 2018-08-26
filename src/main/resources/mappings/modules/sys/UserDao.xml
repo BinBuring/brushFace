@@ -69,17 +69,23 @@
 		a.email,
 		a.phone,
 		a.mobile,
-		a.user_type,
+		a.user_type AS "userType",
 		a.login_ip,
 		a.login_date,
 		a.remarks,
 		a.login_flag,
+		a.status,
+		a.sernum,
 		a.photo,
+		a.id_card AS "idCard",
 		a.create_by AS "createBy.id",
 		a.create_date,
 		a.update_by AS "updateBy.id",
 		a.update_date,
+		a.start_date AS "startDate",
+		a.end_date AS "endDate",
 		a.del_flag,
+		a.auth_phone  AS "authPhone",
     	c.name AS "company.name",
     	c.parent_id AS "company.parent.id",
     	c.parent_ids AS "company.parentIds",
@@ -177,11 +183,17 @@
 					<if test="dbName == 'mssql'">'%'+#{loginName}+'%'</if>
 					<if test="dbName == 'mysql'">CONCAT('%', #{loginName}, '%')</if>
 		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
 		<if test="name != null and name != ''">
 			AND a.name like 
 					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">CONCAT('%', #{name}, '%')</if>
+		</if>
+		<if test="loginFlag != null and loginFlag != ''">
+			AND a.login_flag = #{loginFlag}
 		</if>
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
@@ -190,7 +202,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY c.code, o.code, a.name
+				ORDER BY a.sernum,c.code, o.code, a.name
 			</otherwise>
 		</choose>
 	</select>
@@ -244,7 +256,11 @@
 			remarks, 
 			login_flag, 
 			photo, 
-			del_flag
+			del_flag,
+			start_date,
+			end_date,
+			status,
+			id_card 
 		) VALUES (
 			#{id}, 
 			#{company.id}, 
@@ -264,7 +280,11 @@
 			#{remarks}, 
 			#{loginFlag}, 
 			#{photo}, 
-			#{delFlag}
+			#{delFlag},
+			#{startDate},
+			#{endDate},
+			#{status},
+			#{idCard}
 		)
 	</insert>
 	
@@ -285,7 +305,10 @@
 			update_date = #{updateDate}, 
 			remarks = #{remarks},
 			login_flag = #{loginFlag},
-			photo = #{photo}
+			photo = #{photo},
+			auth_phone = #{authPhone},
+			status = #{status},
+			id_card = #{idCard}
 		WHERE id = #{id}
 	</update>
 	
@@ -314,7 +337,8 @@
 			update_by = #{updateBy.id}, 
 			update_date = #{updateDate}, 
 			remarks = #{remarks},
-			photo = #{photo}
+			photo = #{photo},
+			status = #{status}
 		WHERE id = #{id}
 	</update>
 	

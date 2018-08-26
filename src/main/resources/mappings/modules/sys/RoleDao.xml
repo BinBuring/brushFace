@@ -118,7 +118,7 @@
 			<include refid="roleColumns"/>
 		FROM sys_role a
 		LEFT JOIN sys_office o ON o.id = a.office_id
-		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.id != '1'AND a.id != '0813e54621b24f9f9e56df309f424088'
 		ORDER BY o.code, a.name
 	</select>
 	

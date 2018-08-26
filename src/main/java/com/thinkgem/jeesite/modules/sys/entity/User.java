@@ -44,6 +44,13 @@ public class User extends DataEntity<User> {
 	private String loginFlag;	// 是否允许登陆
 	private String photo;	// 头像
 
+	private String idCard;	//身份证
+	private String status;	// 状态  未审核 未激活 正常 已过期
+	private String sernum;	// 序号
+	private Date startDate;// 有效期开始
+	private Date endDate;	// 有效期结束
+	private String authPhone;	//照片授权状态
+	
 	private String oldLoginName;// 原登录名
 	private String newPassword;	// 新密码
 	
@@ -73,6 +80,54 @@ public class User extends DataEntity<User> {
 		this.role = role;
 	}
 	
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getIdCard() {
+		return idCard;
+	}
+
+	public void setIdCard(String idCard) {
+		this.idCard = idCard;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getSernum() {
+		return sernum;
+	}
+
+	public void setSernum(String sernum) {
+		this.sernum = sernum;
+	}
+
+	public String getAuthPhone() {
+		return authPhone;
+	}
+
+	public void setAuthPhone(String authPhone) {
+		this.authPhone = authPhone;
+	}
+
 	public String getPhoto() {
 		return photo;
 	}
