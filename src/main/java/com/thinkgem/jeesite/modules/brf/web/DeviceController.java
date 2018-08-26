@@ -21,6 +21,8 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.brf.entity.Device;
 import com.thinkgem.jeesite.modules.brf.service.DeviceService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.SystemService;
 
 /**
  * 设备管理Controller
@@ -33,6 +35,8 @@ public class DeviceController extends BaseController {
 
 	@Autowired
 	private DeviceService deviceService;
+	@Autowired
+	private SystemService systemService;
 	
 	@ModelAttribute
 	public Device get(@RequestParam(required=false) String id) {
@@ -60,7 +64,24 @@ public class DeviceController extends BaseController {
 		model.addAttribute("device", device);
 		return "modules/brf/deviceForm";
 	}
-
+	/**
+	 * 授权
+	 * @param device
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "authorization")
+	public String authorization(Device device, Model model,HttpServletRequest request,HttpServletResponse response) {
+		model.addAttribute("device", device);
+		User user = new User();
+		user.setLoginFlag("0");
+		Page<User> page = systemService.findUser(new Page<User>(request, response), user);
+        model.addAttribute("page", page);
+		return "modules/brf/empList";
+	}
+	
 	@RequiresPermissions("brf:device:edit")
 	@RequestMapping(value = "save")
 	public String save(Device device, Model model, RedirectAttributes redirectAttributes) {
