@@ -43,7 +43,6 @@ import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.uuface.entity.ResultData;
 import com.thinkgem.jeesite.modules.uuface.service.InterfaceService;
-import com.uniubi.ufaceoffline.UfaceOffline;
 
 /**
  * 员工Controller

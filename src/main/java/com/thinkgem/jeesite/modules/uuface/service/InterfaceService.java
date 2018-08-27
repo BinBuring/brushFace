@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.uuface.service;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,14 +52,15 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	 * @return
 	 * @throws UnsupportedEncodingException 
 	 */
-	public ResultData devEmp(User user,HttpServletRequest request) throws UnsupportedEncodingException {
+	public ResultData devEmp(Device device,String personGuids,HttpServletRequest request) throws UnsupportedEncodingException {
 		UfaceToken token = getToken();
 		App app = getApp();
 		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
-		maps.put("tag", user.getRemarks());
-		maps.put("passTimes", user.getUserType());
+		maps.put("deviceKey", device.getId());
+		maps.put("personGuids", personGuids);
+		maps.put("passTimes", "");
 		String response = null;
 		ResultData hr = new ResultData();
 		try {
@@ -84,11 +86,11 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	public ResultData createEmp(User user,HttpServletRequest request) throws UnsupportedEncodingException {
 		UfaceToken token = getToken();
 		App app = getApp();
-		String name = new String(user.getName().getBytes("ISO-8859-1"), "UTF-8"); 
+		//String name = new String(user.getName().getBytes("ISO-8859-1"), "UTF-8"); 
 		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
-		maps.put("name", name);
+		maps.put("name", URLEncoder.encode(user.getName(), "utf-8"));
 		maps.put("idNo", user.getIdCard());
 		maps.put("phone", user.getPhone());
 		maps.put("tag", user.getRemarks());
@@ -96,7 +98,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		String response = null;
 		ResultData hr = new ResultData();
 		try {
-			response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person", InterfaceUtils.getMapToString(maps));
+			response = InterfaceUtils.post(app.getApiurl()+app.getAppid() + "/person", InterfaceUtils.getMapToString(maps));
 			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
 			System.out.println("=====================================");
 			System.out.println("执行结果：" + response);
