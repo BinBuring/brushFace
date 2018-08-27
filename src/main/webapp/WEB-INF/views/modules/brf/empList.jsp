@@ -25,8 +25,7 @@
 			  //复选框全选与反选
 			 $(".chat").click(function () {
 		        var groupCheckbox=$("input[name='check']");
-		        var aa = getIds();
-				alert(aa);
+		       getIds();
 		       /*  var ids = "";
 			    for(i=0;i<groupCheckbox.length;i++){
 			        if(groupCheckbox[i].checked){
@@ -48,8 +47,7 @@
 				              $(this).attr("checked", false);  
 				        });
 				    } 
-					var aa = getIds();
-					alert(aa);
+					getIds();
 				});
 
 		});
@@ -114,9 +112,9 @@
 		</tbody>
 	</table>
 	<div class="pagination">${page}</div>
-<form:form id="inputForm" modelAttribute="device" action="${ctx}/brf/device/save" method="post" class="form-horizontal">
-	<input type="text" value="${device.id }" name = "devId">
-	<input type="text" value="" id="guids" name = "guids">
+<form:form id="inputForm" modelAttribute="device" action="${ctx}/brf/devUser/save" method="post" class="form-horizontal">
+	<input type="hidden" value="${device.id }" name = "devId">
+	<input type="hidden" value="" id="guids" name = "guids">
 	<div class="form-actions">
 		<input id="btnSubmit" class="btn btn-primary" type="submit"value="保 存" />&nbsp;
 		<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)" />

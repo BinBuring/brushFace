@@ -10,6 +10,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,6 +38,8 @@ public class DeviceController extends BaseController {
 	private DeviceService deviceService;
 	@Autowired
 	private SystemService systemService;
+	@Autowired
+	private com.thinkgem.jeesite.modules.uface.service.DeviceService deviceService2;
 	
 	@ModelAttribute
 	public Device get(@RequestParam(required=false) String id) {
@@ -52,7 +55,8 @@ public class DeviceController extends BaseController {
 	
 	@RequiresPermissions("brf:device:view")
 	@RequestMapping(value = {"list", ""})
-	public String list(Device device, HttpServletRequest request, HttpServletResponse response, Model model) {
+	public String list(ModelMap modelMap,Device device, HttpServletRequest request, HttpServletResponse response, Model model) {
+		System.out.println(modelMap.get("message"));
 		Page<Device> page = deviceService.findPage(new Page<Device>(request, response), device); 
 		model.addAttribute("page", page);
 		return "modules/brf/deviceList";
@@ -88,7 +92,9 @@ public class DeviceController extends BaseController {
 		if (!beanValidator(model, device)){
 			return form(device, model);
 		}
-		deviceService.save(device);
+		String jsonString = deviceService2.create(device.getSeq(), device.getName(), "");
+		System.out.println(jsonString);
+		//deviceService.save(device);
 		addMessage(redirectAttributes, "保存设备成功");
 		return "redirect:"+Global.getAdminPath()+"/brf/device/?repage";
 	}

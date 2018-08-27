@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.brf.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,9 +20,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.brf.entity.DevUser;
 import com.thinkgem.jeesite.modules.brf.service.DevUserService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.SystemService;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 设备人员授权Controller
@@ -33,6 +39,8 @@ public class DevUserController extends BaseController {
 
 	@Autowired
 	private DevUserService devUserService;
+	@Autowired
+	private SystemService systemrService;
 	
 	@ModelAttribute
 	public DevUser get(@RequestParam(required=false) String id) {
@@ -46,7 +54,6 @@ public class DevUserController extends BaseController {
 		return entity;
 	}
 	
-	@RequiresPermissions("brf:devUser:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(DevUser devUser, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<DevUser> page = devUserService.findPage(new Page<DevUser>(request, response), devUser); 
@@ -54,30 +61,41 @@ public class DevUserController extends BaseController {
 		return "modules/brf/devUserList";
 	}
 
-	@RequiresPermissions("brf:devUser:view")
 	@RequestMapping(value = "form")
 	public String form(DevUser devUser, Model model) {
 		model.addAttribute("devUser", devUser);
 		return "modules/brf/devUserForm";
 	}
 
-	@RequiresPermissions("brf:devUser:edit")
 	@RequestMapping(value = "save")
-	public String save(DevUser devUser, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, devUser)){
-			return form(devUser, model);
+	public String save(HttpServletRequest request,HttpServletResponse response,DevUser devUser, Model model, RedirectAttributes redirectAttributes) {
+		String guids = request.getParameter("guids");
+		if (guids.charAt(0) == ',') {
+			guids = guids.substring(1);
 		}
-		devUserService.save(devUser);
+		String[] guid = guids.split(",");
+		for (int i = 0; i < guid.length; i++) {
+			User user = UserUtils.get(guid[i]);
+			devUser.setUser(user);
+			List<DevUser> list = devUserService.findList(devUser);
+			if (list.size() <= 0) {
+				devUser.setIsNewRecord(true);
+				devUser.setId(IdGen.uuid());
+				if (!beanValidator(model, devUser)){
+					return form(devUser, model);
+				}
+				devUserService.save(devUser);
+			}
+		}
 		addMessage(redirectAttributes, "保存授权成功");
-		return "redirect:"+Global.getAdminPath()+"/brf/devUser/?repage";
+		return "redirect:"+Global.getAdminPath()+"/brf/device/?repage";
 	}
 	
-	@RequiresPermissions("brf:devUser:edit")
 	@RequestMapping(value = "delete")
 	public String delete(DevUser devUser, RedirectAttributes redirectAttributes) {
 		devUserService.delete(devUser);
 		addMessage(redirectAttributes, "删除授权成功");
-		return "redirect:"+Global.getAdminPath()+"/brf/devUser/?repage";
+		return "redirect:"+Global.getAdminPath()+"/brf/device/?repage";
 	}
 
 }
