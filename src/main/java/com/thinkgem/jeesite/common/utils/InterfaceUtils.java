@@ -14,6 +14,7 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,11 +77,14 @@ public class InterfaceUtils {
 		httpConn.setUseCaches(false); // 不允许缓存
 		httpConn.setRequestMethod("POST"); // 设置POST方式连接
 		// 设置请求属性
-		httpConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+		//httpConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+		httpConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded;charset=UTF-8");
 		httpConn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
 		httpConn.setRequestProperty("Charset","UTF-8");
 		// 连接,也可以不用明文connect，使用下面的httpConn.getOutputStream()会自动connect
 		httpConn.connect();
+/*		StringEntity s = new StringEntity(json,Charset.forName("UTF-8"));  //对参数进行编码，防止中文乱码
+    	s.setContentEncoding("UTF-8");*/
 		// 建立输入流，向指向的URL传入参数
 		DataOutputStream dos = new DataOutputStream(httpConn.getOutputStream());
 		dos.writeBytes(param);
@@ -123,7 +127,30 @@ public class InterfaceUtils {
         }
         return sb.toString();
     }
-	
+    /**
+     * 
+     * String转map
+     * @param str
+     * @return
+     */
+    public static Map<String,String> getStringToMap(String str){
+    	str = str.replaceAll("\"","");
+    	str = str.replaceAll("\\{", "");
+    	str = str.replaceAll("\\}", "");
+        //根据&截取
+        String[] strings = str.split(",");
+        //设置HashMap长度
+        Map<String,String> map = new HashMap<String,String>(strings.length);
+        //循环加入map集合
+        for (int i = 0; i < strings.length; i++) {
+            //截取一组字符串
+            String[] strArray = strings[i].split(":");
+            //strArray[0]为KEY  strArray[1]为值
+            map.put(strArray[0],strArray[1]);
+        }
+        return map;
+    }
+    
     public static String MD5(String sourceStr) {
         String result = "";
         try {

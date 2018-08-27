@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.uuface.dao.UfaceTokenDao">
+    
+	<sql id="ufaceTokenColumns">
+		a.id AS "id",
+		a.token AS "token",
+		a.state AS "state",
+		a.created_on AS "createDate",
+		a.updated_on AS "updateDate"
+	</sql>
+	
+	<sql id="ufaceTokenJoins">
+	</sql>
+    
+	<select id="get" resultType="UfaceToken">
+		SELECT 
+			<include refid="ufaceTokenColumns"/>
+		FROM sys_uface_token a
+		<include refid="ufaceTokenJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="UfaceToken">
+		SELECT 
+			<include refid="ufaceTokenColumns"/>
+		FROM sys_uface_token a
+		<include refid="ufaceTokenJoins"/>
+		<where>
+		</where>
+		order by a.created_on desc
+	</select>
+	
+	<select id="findAllList" resultType="UfaceToken">
+		SELECT 
+			<include refid="ufaceTokenColumns"/>
+		FROM sys_uface_token a
+		<include refid="ufaceTokenJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_uface_token(
+			id,
+			token,
+			state,
+			created_on,
+			updated_on
+		) VALUES (
+			#{id},
+			#{token},
+			#{state},
+			#{createDate},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_uface_token SET 	
+			token = #{token},
+			state = #{state},
+			created_on = #{createDate},
+			updated_on = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sys_uface_token
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

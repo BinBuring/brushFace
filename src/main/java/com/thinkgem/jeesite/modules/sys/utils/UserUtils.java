@@ -69,7 +69,14 @@ public class UserUtils {
 		}
 		return user;
 	}
-	
+	/**
+	 * 根据ID获取角色
+	 * @param id
+	 * @return 取不到返回null
+	 */
+	public static Role getRole(String id){
+		return roleDao.get(id);
+	}	
 	/**
 	 * 根据登录名获取用户
 	 * @param loginName

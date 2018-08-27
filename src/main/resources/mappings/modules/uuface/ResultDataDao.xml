@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.uuface.dao.ResultDataDao">
+    
+	<sql id="resultDataColumns">
+		a.id AS "id",
+		a.result AS "result",
+		a.code AS "code",
+		a.msg AS "msg",
+		a.data AS "data",
+		a.success AS "success",
+		a.create_date AS "createDate"
+	</sql>
+	
+	<sql id="resultDataJoins">
+	</sql>
+    
+	<select id="get" resultType="ResultData">
+		SELECT 
+			<include refid="resultDataColumns"/>
+		FROM brf_result_data a
+		<include refid="resultDataJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ResultData">
+		SELECT 
+			<include refid="resultDataColumns"/>
+		FROM brf_result_data a
+		<include refid="resultDataJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ResultData">
+		SELECT 
+			<include refid="resultDataColumns"/>
+		FROM brf_result_data a
+		<include refid="resultDataJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO brf_result_data(
+			id,
+			result,
+			code,
+			msg,
+			data,
+			success,
+			create_date
+		) VALUES (
+			#{id},
+			#{result},
+			#{code},
+			#{msg},
+			#{data},
+			#{success},
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE brf_result_data SET 	
+			result = #{result},
+			code = #{code},
+			msg = #{msg},
+			data = #{data},
+			success = #{success}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM brf_result_data
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

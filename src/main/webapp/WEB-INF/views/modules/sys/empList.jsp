@@ -114,7 +114,7 @@
     				<c:if test="${user.status eq '0'}">
     					<a href="${ctx}/sys/emp/audit?id=${user.id}">审核</a>
     				</c:if>
-					<a href="${ctx}/sys/user/delete?id=${user.id}" onclick="return confirmx('确认要删除该用户吗？', this.href)">删除</a>
+					<a href="${ctx}/sys/emp/empdelete?id=${user.id}" onclick="return confirmx('确认要删除该员工吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

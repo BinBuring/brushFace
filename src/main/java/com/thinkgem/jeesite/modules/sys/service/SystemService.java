@@ -129,7 +129,8 @@ public class SystemService extends BaseService implements InitializingBean {
 	
 	@Transactional(readOnly = false)
 	public void saveUser(User user) {
-		if (StringUtils.isBlank(user.getId())){
+		//if (StringUtils.isBlank(user.getId())){
+		if(user.getIsNewRecord()){
 			user.preInsert();
 			userDao.insert(user);
 		}else{

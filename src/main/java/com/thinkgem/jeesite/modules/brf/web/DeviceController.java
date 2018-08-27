@@ -24,6 +24,8 @@ import com.thinkgem.jeesite.modules.brf.entity.Device;
 import com.thinkgem.jeesite.modules.brf.service.DeviceService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
+import com.thinkgem.jeesite.modules.uuface.entity.ResultData;
+import com.thinkgem.jeesite.modules.uuface.service.InterfaceService;
 
 /**
  * 设备管理Controller
@@ -39,7 +41,7 @@ public class DeviceController extends BaseController {
 	@Autowired
 	private SystemService systemService;
 	@Autowired
-	private com.thinkgem.jeesite.modules.uface.service.DeviceService deviceService2;
+	private InterfaceService interfaceService;
 	
 	@ModelAttribute
 	public Device get(@RequestParam(required=false) String id) {
@@ -92,10 +94,13 @@ public class DeviceController extends BaseController {
 		if (!beanValidator(model, device)){
 			return form(device, model);
 		}
-		String jsonString = deviceService2.create(device.getSeq(), device.getName(), "");
-		System.out.println(jsonString);
-		//deviceService.save(device);
-		addMessage(redirectAttributes, "保存设备成功");
+		ResultData resultData = interfaceService.createDevice(device);
+		if (resultData.getSuccess().equals("true")) {
+			deviceService.save(device);
+			addMessage(redirectAttributes, "保存设备成功");
+		}else {
+			addMessage(redirectAttributes, "保存设备失败");
+		}
 		return "redirect:"+Global.getAdminPath()+"/brf/device/?repage";
 	}
 	

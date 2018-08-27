@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.uuface.dao.AppDao">
+    
+	<sql id="appColumns">
+		a.id AS "id",
+		a.apiurl AS "apiurl",
+		a.appid AS "appid",
+		a.appkey AS "appkey",
+		a.appsecret AS "appsecret"
+	</sql>
+	
+	<sql id="appJoins">
+	</sql>
+    
+	<select id="get" resultType="App">
+		SELECT 
+			<include refid="appColumns"/>
+		FROM bre_app a
+		<include refid="appJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="App">
+		SELECT 
+			<include refid="appColumns"/>
+		FROM bre_app a
+		<include refid="appJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="App">
+		SELECT 
+			<include refid="appColumns"/>
+		FROM bre_app a
+		<include refid="appJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bre_app(
+			id,
+			apiurl,
+			appid,
+			appkey,
+			appsecret
+		) VALUES (
+			#{id},
+			#{apiurl},
+			#{appid},
+			#{appkey},
+			#{appsecret}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bre_app SET 	
+			apiurl = #{apiurl},
+			appid = #{appid},
+			appkey = #{appkey},
+			appsecret = #{appsecret}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM bre_app
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

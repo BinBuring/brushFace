@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,8 @@ import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.GsonUtils;
+import com.thinkgem.jeesite.common.utils.InterfaceUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
@@ -38,6 +41,9 @@ import com.thinkgem.jeesite.modules.sys.entity.Role;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.modules.uuface.entity.ResultData;
+import com.thinkgem.jeesite.modules.uuface.service.InterfaceService;
+import com.uniubi.ufaceoffline.UfaceOffline;
 
 /**
  * 员工Controller
@@ -50,6 +56,8 @@ public class EmpController extends BaseController {
 
 	@Autowired
 	private SystemService systemService;
+	@Autowired 
+	private InterfaceService interfaceService;
 	
 	@ModelAttribute
 	public User get(@RequestParam(required=false) String id) {
@@ -95,7 +103,7 @@ public class EmpController extends BaseController {
 
 	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "empsave")
-	public String empsave(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+	public String empsave(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
 		if(Global.isDemoMode()){
 			addMessage(redirectAttributes, "演示模式，不允许操作！");
 			return "redirect:" + adminPath + "/sys/emp/list?repage";
@@ -110,6 +118,8 @@ public class EmpController extends BaseController {
 		List<Role> roleList = Lists.newArrayList();
 		List<String> roleIdList = user.getRoleIdList();
 		roleIdList.add("0813e54621b24f9f9e56df309f424088");  //设置默认角色为员工
+		Role role = UserUtils.getRole("0813e54621b24f9f9e56df309f424088");
+		roleList.add(role);
 		for (Role r : systemService.findAllRole()){
 			if (roleIdList.contains(r.getId())){
 				roleList.add(r);
@@ -119,19 +129,30 @@ public class EmpController extends BaseController {
 		user.setStatus("0");
 		user.setAuthPhone("1");
 		user.setRoleList(roleList);
+		ResultData data = interfaceService.createEmp(user,request);
 		// 保存员工信息
-		systemService.saveUser(user);
-		addMessage(redirectAttributes, "保存员工'" + user.getLoginName() + "'成功");
+		if(data.getSuccess().equals("true")){
+			String json = GsonUtils.getJsonFromObject(data.getData());
+			Map<String, String> map = InterfaceUtils.getStringToMap(json);
+			System.out.println(map.get("guid"));
+			user.setIsNewRecord(true);
+			user.setId(map.get("guid"));
+			systemService.saveUser(user);
+			addMessage(redirectAttributes, "保存员工'" + user.getName() + "'成功");
+		}else {
+			addMessage(redirectAttributes, "保存员工'" + user.getName() + "'失败");
+		}
 		return "redirect:" + adminPath + "/sys/emp/list?repage";
 	}
+	
 	@RequestMapping(value = "audit")
 	public String audit(User user,RedirectAttributes redirectAttributes){
 		if (user.getPhoto()==null) {
-			addMessage(redirectAttributes, "审核员工" + user.getLoginName() + "'失败,该员工头像不符合");
+			addMessage(redirectAttributes, "审核员工" + user.getName() + "'失败,该员工头像不符合");
 			return "redirect:" + adminPath + "/sys/emp/list?repage";
 		}
 		if (user.getAuthPhone().equals("1")) {
-			addMessage(redirectAttributes, "审核员工" + user.getLoginName() + "'失败，该员工未授权");
+			addMessage(redirectAttributes, "审核员工" + user.getName() + "'失败，该员工未授权");
 			return "redirect:" + adminPath + "/sys/emp/list?repage";
 		}
 		//根据有效期判断用户状态
@@ -143,7 +164,7 @@ public class EmpController extends BaseController {
 		}else {
 			user.setStatus("3");
 		}
-		addMessage(redirectAttributes, "审核员工" + user.getLoginName() + "'成功");
+		addMessage(redirectAttributes, "审核员工" + user.getName() + "'成功");
 		return "redirect:" + adminPath + "/sys/emp/list?repage";
 	}
 	
