@@ -23,10 +23,13 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.brf.entity.DevUser;
+import com.thinkgem.jeesite.modules.brf.entity.Device;
 import com.thinkgem.jeesite.modules.brf.service.DevUserService;
+import com.thinkgem.jeesite.modules.brf.service.DeviceService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.modules.uuface.service.InterfaceService;
 
 /**
  * 设备人员授权Controller
@@ -41,6 +44,10 @@ public class DevUserController extends BaseController {
 	private DevUserService devUserService;
 	@Autowired
 	private SystemService systemrService;
+	@Autowired
+	private InterfaceService interfaceService;
+	@Autowired 
+	private DeviceService deviceService;
 	
 	@ModelAttribute
 	public DevUser get(@RequestParam(required=false) String id) {
@@ -74,6 +81,9 @@ public class DevUserController extends BaseController {
 			guids = guids.substring(1);
 		}
 		String[] guid = guids.split(",");
+		Device device = deviceService.get(devUser.getDevId());
+		interfaceService.devEmp(device, guids);
+		
 		for (int i = 0; i < guid.length; i++) {
 			User user = UserUtils.get(guid[i]);
 			devUser.setUser(user);

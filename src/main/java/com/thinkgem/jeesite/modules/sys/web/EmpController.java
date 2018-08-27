@@ -128,7 +128,7 @@ public class EmpController extends BaseController {
 		user.setStatus("0");
 		user.setAuthPhone("1");
 		user.setRoleList(roleList);
-		ResultData data = interfaceService.createEmp(user,request);
+		ResultData data = interfaceService.createEmp(user);
 		// 保存员工信息
 		if(data.getSuccess().equals("true")){
 			String json = GsonUtils.getJsonFromObject(data.getData());
@@ -137,6 +137,9 @@ public class EmpController extends BaseController {
 			user.setIsNewRecord(true);
 			user.setId(map.get("guid"));
 			systemService.saveUser(user);
+			if (data.getSuccess().equals("true")&&StringUtils.isNotEmpty(user.getPhoto())) {
+				interfaceService.empimageUrl(user,request);
+			}
 			addMessage(redirectAttributes, "保存员工'" + user.getName() + "'成功");
 		}else {
 			addMessage(redirectAttributes, "保存员工'" + user.getName() + "'失败");
