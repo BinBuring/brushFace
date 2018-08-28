@@ -73,7 +73,62 @@ public class DevUserController extends BaseController {
 		model.addAttribute("devUser", devUser);
 		return "modules/brf/devUserForm";
 	}
-
+	/**
+	 * 一个用户，多个设备
+	 * @param request
+	 * @param response
+	 * @param devUser
+	 * @param model
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@RequestMapping(value = "saveDev")
+	public String saveDev(HttpServletRequest request,HttpServletResponse response,DevUser devUser, Model model, RedirectAttributes redirectAttributes) {
+		String devids = request.getParameter("devids");
+		String devKeys = new String();
+		String userId = request.getParameter("userId");
+		if (devids.charAt(0) == ',') {
+			devids = devids.substring(1);
+		}
+		String[] devid = devids.split(",");
+		User user = UserUtils.get(userId);
+		for (int i = 0; i < devid.length; i++) {
+			devKeys += deviceService.get(devid[i]).getSeq()+",";
+		}
+		devKeys = devKeys.substring(0, devKeys.length()-1);
+		interfaceService.empDev(user, devKeys);
+		
+		for (int i = 0; i < devid.length; i++) {
+			Device dev = deviceService.get(devid[i]);
+			devUser.setUser(user);
+			devUser.setDevId(dev.getId());
+			devUser.setIsNewRecord(true);
+			devUser.setId(IdGen.uuid());
+			List<DevUser> list = devUserService.findList(devUser);  //查询表中数据，看是否插入
+			if (list.size() <= 0) {
+				devUser.setIsNewRecord(true);
+				devUser.setId(IdGen.uuid());
+				if (!beanValidator(model, devUser)){
+					return form(devUser, model);
+				}
+				devUserService.save(devUser);
+			}
+		}
+		addMessage(redirectAttributes, "保存授权成功");
+		//修改员工授权状态
+		user.setAuthPhone("2");
+		systemrService.saveUser(user);
+		return "redirect:"+Global.getAdminPath()+"/sys/emp/?repage";
+	}
+	/**
+	 * 一个设备，多个用户
+	 * @param request
+	 * @param response
+	 * @param devUser
+	 * @param model
+	 * @param redirectAttributes
+	 * @return
+	 */
 	@RequestMapping(value = "save")
 	public String save(HttpServletRequest request,HttpServletResponse response,DevUser devUser, Model model, RedirectAttributes redirectAttributes) {
 		String guids = request.getParameter("guids");

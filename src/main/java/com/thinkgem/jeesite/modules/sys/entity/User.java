@@ -43,13 +43,14 @@ public class User extends DataEntity<User> {
 	private Date loginDate;	// 最后登陆日期
 	private String loginFlag;	// 是否允许登陆
 	private String photo;	// 头像
+	private String photoId;	//头像id
 
 	private String idCard;	//身份证
 	private String status;	// 状态  未审核 未激活 正常 已过期
 	private String sernum;	// 序号
 	private Date startDate;// 有效期开始
 	private Date endDate;	// 有效期结束
-	private String authPhone;	//照片授权状态
+	private String authPhone;	//照片授权状态1未授权2已授权
 	
 	private String oldLoginName;// 原登录名
 	private String newPassword;	// 新密码
@@ -80,6 +81,14 @@ public class User extends DataEntity<User> {
 		this.role = role;
 	}
 	
+	public String getPhotoId() {
+		return photoId;
+	}
+
+	public void setPhotoId(String photoId) {
+		this.photoId = photoId;
+	}
+
 	public Date getStartDate() {
 		return startDate;
 	}

@@ -110,10 +110,10 @@
 				<td>${user.roleNames}</td> --%>
 				<shiro:hasPermission name="sys:user:edit"><td>
     				<a href="${ctx}/sys/emp/empform?id=${user.id}">修改</a>
-    				<a href="javaScript:;">授权</a>
-    				<c:if test="${user.status eq '0'}">
+    				<a href="${ctx}/sys/emp/authorization?id=${user.id}">授权</a>
+    				<%-- <c:if test="${user.status eq '0'}">
     					<a href="${ctx}/sys/emp/audit?id=${user.id}">审核</a>
-    				</c:if>
+    				</c:if> --%>
 					<a href="${ctx}/sys/emp/empdelete?id=${user.id}" onclick="return confirmx('确认要删除该员工吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>

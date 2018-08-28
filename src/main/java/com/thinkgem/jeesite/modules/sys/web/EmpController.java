@@ -36,6 +36,8 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.brf.entity.Device;
+import com.thinkgem.jeesite.modules.brf.service.DeviceService;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -57,6 +59,8 @@ public class EmpController extends BaseController {
 	private SystemService systemService;
 	@Autowired 
 	private InterfaceService interfaceService;
+	@Autowired
+	private DeviceService deviceService;
 	
 	@ModelAttribute
 	public User get(@RequestParam(required=false) String id) {
@@ -91,7 +95,21 @@ public class EmpController extends BaseController {
 		model.addAttribute("allRoles", systemService.findAllRole());
 		return "modules/sys/empForm";
 	}
-	
+	/**
+	 * 人员授权设备
+	 * @param device
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "authorization")
+	public String authorization(User user, Model model,HttpServletRequest request,HttpServletResponse response) {
+		model.addAttribute("user", user);
+		Page<Device> page = deviceService.findPage(new Page<Device>(request, response), new Device()); 
+		model.addAttribute("page", page);
+		return "modules/brf/userDevList";
+	}
 	@ResponseBody
 	@RequiresPermissions("sys:user:view")
 	@RequestMapping(value = {"listData"})
@@ -100,6 +118,7 @@ public class EmpController extends BaseController {
 		return page;
 	}
 
+	@SuppressWarnings("unused")
 	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "empsave")
 	public String empsave(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
@@ -124,25 +143,51 @@ public class EmpController extends BaseController {
 				roleList.add(r);
 			}
 		}
-		user.setLoginFlag("0");
-		user.setStatus("0");
-		user.setAuthPhone("1");
-		user.setRoleList(roleList);
-		ResultData data = interfaceService.createEmp(user);
-		// 保存员工信息
-		if(data.getSuccess().equals("true")){
-			String json = GsonUtils.getJsonFromObject(data.getData());
-			Map<String, String> map = InterfaceUtils.getStringToMap(json);
-			System.out.println(map.get("guid"));
-			user.setIsNewRecord(true);
-			user.setId(map.get("guid"));
-			systemService.saveUser(user);
-			if (data.getSuccess().equals("true")&&StringUtils.isNotEmpty(user.getPhoto())) {
-				interfaceService.empimageUrl(user,request);
+		//先到云端查询是否已存在这个员工，有则修改，无则添加
+		ResultData select = interfaceService.selectEmp(user);
+		if (select != null && select.getSuccess().equals("true")) {
+			//在云端上修改信息
+			ResultData update = interfaceService.updateEmp(user);
+			if (update.getSuccess().equals("true")) {
+				ResultData photo = new ResultData();
+				//从数据库找到员工数据
+				User bUser = systemService.findUser(user).get(0);
+				if (update.getSuccess().equals("true")&&StringUtils.isNotEmpty(user.getPhoto())&& !bUser.getPhoto().equals(user.getPhoto())) {//照片是否存在,是否更新，存在的话删除重新上传
+					interfaceService.deletePhoto(user);
+					photo = interfaceService.empimageUrl(user,request);
+					user.setAuthPhone("1");
+				}
+				Map<String, String> dataMap = InterfaceUtils.getStringToMap(photo.getData().toString());
+				user.setPhotoId(dataMap.get("guid"));
+				systemService.saveUser(user);
+				addMessage(redirectAttributes, "保存员工'" + user.getName() + "'成功");
+			}else {
+				addMessage(redirectAttributes, "保存员工'" + user.getName() + "'失败");
 			}
-			addMessage(redirectAttributes, "保存员工'" + user.getName() + "'成功");
 		}else {
-			addMessage(redirectAttributes, "保存员工'" + user.getName() + "'失败");
+			user.setLoginFlag("0");
+			user.setStatus("0");
+			user.setAuthPhone("1");
+			user.setRoleList(roleList);
+			//在云端上保存员工
+			ResultData data = interfaceService.createEmp(user);
+			// 保存员工信息
+			if(data.getSuccess().equals("true")){
+				String json = GsonUtils.getJsonFromObject(data.getData());
+				Map<String, String> map = InterfaceUtils.getStringToMap(json);
+				user.setIsNewRecord(true);
+				user.setId(map.get("guid"));
+				//通过照片url判断是否需要上传照片
+				if (data.getSuccess().equals("true")&&StringUtils.isNotEmpty(user.getPhoto())) {
+					ResultData photo = interfaceService.empimageUrl(user,request);
+					Map<String, String> dataMap = InterfaceUtils.getStringToMap(photo.getData().toString());
+					user.setPhotoId(dataMap.get("guid"));
+				}
+				systemService.saveUser(user);
+				addMessage(redirectAttributes, "保存员工'" + user.getName() + "'成功");
+			}else {
+				addMessage(redirectAttributes, "保存员工'" + user.getName() + "'失败");
+			}
 		}
 		return "redirect:" + adminPath + "/sys/emp/list?repage";
 	}
@@ -182,8 +227,11 @@ public class EmpController extends BaseController {
 		}else if (User.isAdmin(user.getId())){
 			addMessage(redirectAttributes, "删除员工失败, 不允许删除超级管理员员工");
 		}else{
-			systemService.deleteUser(user);
-			addMessage(redirectAttributes, "删除员工成功");
+			ResultData resultData = interfaceService.deleteEmp(user);
+			if (resultData.getSuccess().equals("true")) {
+				systemService.deleteUser(user);
+				addMessage(redirectAttributes, "删除员工成功");
+			}
 		}
 		return "redirect:" + adminPath + "/sys/emp/list?repage";
 	}

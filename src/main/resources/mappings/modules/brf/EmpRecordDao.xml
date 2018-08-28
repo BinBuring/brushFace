@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.brf.dao.EmpRecordDao">
+    
+	<sql id="empRecordColumns">
+		a.id AS "id",
+		a.emp_id AS "emp.id",
+		u.name AS "emp.name",
+		u.no AS "emp.no",
+		a.dev_key AS "devKey",
+		o.name AS "offName",
+		d.aisle AS "dev.aisle",
+		a.photourl AS "photourl",
+		a.showtime AS "showtime",
+		a.data AS "data",
+		a.type AS "type",
+		a.recmode AS "recmode",
+		a.idcardinfo AS "idcardinfo"
+	</sql>
+	
+	<sql id="empRecordJoins">
+		LEFT JOIN sys_user u ON a.emp_id = u.id
+		LEFT JOIN sys_office o ON u.office_id = o.id
+		LEFT JOIN brf_device d ON a.dev_key = d.seq
+	</sql>
+    
+	<select id="get" resultType="EmpRecord">
+		SELECT 
+			<include refid="empRecordColumns"/>
+		FROM brf_emp_record a
+		<include refid="empRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByDate" resultType="int">
+		SELECT 
+			count(1)
+		FROM brf_emp_record a
+		WHERE a.showtime = #{showtime}
+	</select>
+	
+	<select id="findList" resultType="EmpRecord">
+		SELECT 
+			<include refid="empRecordColumns"/>
+		FROM brf_emp_record a
+		<include refid="empRecordJoins"/>
+		<where>
+			
+			<if test="empName != null and empName != ''">
+				AND u.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{empName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{empName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{empName},'%')</if>
+			</if>
+			<if test="empNo != null and empNo != ''">
+				AND u.no = #{empNo}
+			</if>
+			<if test="beginShowtime != null and endShowtime != null and beginShowtime != '' and endShowtime != ''">
+				AND a.showtime BETWEEN #{beginShowtime} AND #{endShowtime}
+			</if>
+			<if test="offName != null and offName != ''">
+				AND o.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{offName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{offName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{offName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.showtime desc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EmpRecord">
+		SELECT 
+			<include refid="empRecordColumns"/>
+		FROM brf_emp_record a
+		<include refid="empRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO brf_emp_record(
+			id,
+			emp_id,
+			dev_key,
+			photourl,
+			showtime,
+			data,
+			type,
+			recmode,
+			idcardinfo
+		) VALUES (
+			#{id},
+			#{emp.id},
+			#{devKey},
+			#{photourl},
+			#{showtime},
+			#{data},
+			#{type},
+			#{recmode},
+			#{idcardinfo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE brf_emp_record SET 	
+			emp_id = #{emp.id},
+			dev_key = #{devKey},
+			photourl = #{photourl},
+			showtime = #{showtime},
+			data = #{data},
+			type = #{type},
+			recmode = #{recmode},
+			idcardinfo = #{idcardinfo}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM brf_emp_record
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -88,7 +88,7 @@
 				<td>${user.roleNames}</td> --%>
 				<shiro:hasPermission name="sys:user:edit"><td>
     				<a href="${ctx}/sys/user/form?id=${user.id}">编辑</a>
-    				<a href="javaScript:;">授权</a>
+    				<!-- <a href="javaScript:;">授权</a> -->
 					<a href="${ctx}/sys/user/delete?id=${user.id}" onclick="return confirmx('确认要删除该用户吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>

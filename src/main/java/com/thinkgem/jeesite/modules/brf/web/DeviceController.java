@@ -107,8 +107,11 @@ public class DeviceController extends BaseController {
 	@RequiresPermissions("brf:device:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Device device, RedirectAttributes redirectAttributes) {
-		deviceService.delete(device);
-		addMessage(redirectAttributes, "删除设备成功");
+		ResultData resultData = interfaceService.deleteDev(device);
+		if (resultData.getSuccess().equals("true")) {
+			deviceService.delete(device);
+			addMessage(redirectAttributes, "删除设备成功");
+		}
 		return "redirect:"+Global.getAdminPath()+"/brf/device/?repage";
 	}
 

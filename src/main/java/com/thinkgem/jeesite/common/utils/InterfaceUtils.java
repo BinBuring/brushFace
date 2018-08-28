@@ -11,18 +11,25 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -37,47 +44,6 @@ import org.apache.http.util.EntityUtils;
  */
 public class InterfaceUtils {
 	
-    public static void interfaceUtil(String path,String data) {
-        try {
-            URL url = new URL(path);
-            //打开和url之间的连接
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            PrintWriter out = null;
-            //请求方式
-            //conn.setRequestMethod("POST");
-//           //设置通用的请求属性
-            conn.setRequestProperty("accept", "*/*");
-            conn.setRequestProperty("connection", "Keep-Alive");
-            conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)"); 
-            //设置是否向httpUrlConnection输出，设置是否从httpUrlConnection读入，此外发送post请求必须设置这两个
-            //最常用的Http请求无非是get和post，get请求可以获取静态页面，也可以把参数放在URL字串后面，传递给servlet，
-            //post与get的 不同之处在于post的参数不是放在URL字串里面，而是放在http请求的正文内。
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            //获取URLConnection对象对应的输出流
-            out = new PrintWriter(conn.getOutputStream());
-            //发送请求参数即数据
-            out.print(data);
-            //缓冲数据
-            out.flush();
-            //获取URLConnection对象对应的输入流
-            InputStream is = conn.getInputStream();
-            //构造一个字符流缓存
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String str = "";
-            while ((str = br.readLine()) != null) {
-                System.out.println(str);
-            }
-            //关闭流
-            is.close();
-            //断开连接，最好写上，disconnect是在底层tcp socket链接空闲时才切断。如果正在被其他线程使用就不切断。
-            //固定多线程的话，如果不disconnect，链接会增多，直到收发不出信息。写上disconnect后正常一些。
-            conn.disconnect();
-            System.out.println("完整结束");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     /** 
      * 发送 post请求
      */  
@@ -120,6 +86,83 @@ public class InterfaceUtils {
         }  
         return obj;
     }  
+    public static String HttpDelete(String urlPath,String param) throws IOException {
+		// 建立连接
+		URL url = new URL(urlPath);
+		HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+		// 设置参数
+		httpConn.setDoOutput(true); // 需要输出
+		httpConn.setDoInput(true); // 需要输入
+		httpConn.setUseCaches(false); // 不允许缓存
+		httpConn.setRequestMethod("DELETE"); // 设置POST方式连接
+		// 设置请求属性
+		//httpConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+		httpConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded;charset=UTF-8");
+		httpConn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
+		httpConn.setRequestProperty("Charset","UTF-8");
+		// 连接,也可以不用明文connect，使用下面的httpConn.getOutputStream()会自动connect
+		httpConn.connect();
+		/*StringEntity s = new StringEntity(param,Charset.forName("UTF-8"));  //对参数进行编码，防止中文乱码
+    	s.setContentEncoding("UTF-8");*/
+		// 建立输入流，向指向的URL传入参数
+		DataOutputStream dos = new DataOutputStream(httpConn.getOutputStream());
+		dos.writeBytes(param);
+		dos.flush();
+		dos.close();
+		// 获得响应状态
+		int resultCode = httpConn.getResponseCode();
+		if (HttpURLConnection.HTTP_OK == resultCode) {
+			StringBuffer sb = new StringBuffer();
+			String readLine = new String();
+			BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
+			while ((readLine = responseReader.readLine()) != null) {
+				sb.append(readLine).append("\n");
+			}
+			responseReader.close();
+			
+			return sb.toString();
+		}
+		
+		return Integer.toString(resultCode);
+	}
+    public static String HttpPut(String urlPath,String param) throws IOException {
+		// 建立连接
+		URL url = new URL(urlPath);
+		HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+		// 设置参数
+		httpConn.setDoOutput(true); // 需要输出
+		httpConn.setDoInput(true); // 需要输入
+		httpConn.setUseCaches(false); // 不允许缓存
+		httpConn.setRequestMethod("PUT"); // 设置POST方式连接
+		// 设置请求属性
+		//httpConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+		httpConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded;charset=UTF-8");
+		httpConn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
+		httpConn.setRequestProperty("Charset","UTF-8");
+		// 连接,也可以不用明文connect，使用下面的httpConn.getOutputStream()会自动connect
+		httpConn.connect();
+		/*StringEntity s = new StringEntity(param,Charset.forName("UTF-8"));  //对参数进行编码，防止中文乱码
+    	s.setContentEncoding("UTF-8");*/
+		// 建立输入流，向指向的URL传入参数
+		DataOutputStream dos = new DataOutputStream(httpConn.getOutputStream());
+		dos.writeBytes(param);
+		dos.flush();
+		dos.close();
+		// 获得响应状态
+		int resultCode = httpConn.getResponseCode();
+		if (HttpURLConnection.HTTP_OK == resultCode) {
+			StringBuffer sb = new StringBuffer();
+			String readLine = new String();
+			BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
+			while ((readLine = responseReader.readLine()) != null) {
+				sb.append(readLine).append("\n");
+			}
+			responseReader.close();
+			
+			return sb.toString();
+		}
+		return Integer.toString(resultCode);
+	}
 	public static String HttpPost(String urlPath,String param) throws IOException {
 		// 建立连接
 		URL url = new URL(urlPath);
@@ -159,7 +202,59 @@ public class InterfaceUtils {
 		
 		return Integer.toString(resultCode);
 	}
-	
+	 /**
+     * 向指定URL发送GET方法的请求
+     * 
+     * @param url
+     *            发送请求的URL
+     * @param param
+     *            请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
+     * @return URL 所代表远程资源的响应结果
+     */
+    public static String sendGet(String url, String param) {
+        String result = "";
+        BufferedReader in = null;
+        try {
+            String urlNameString = url + "?" + param;
+            URL realUrl = new URL(urlNameString);
+            // 打开和URL之间的连接
+            URLConnection connection = realUrl.openConnection();
+            // 设置通用的请求属性
+            connection.setRequestProperty("accept", "*/*");
+            connection.setRequestProperty("connection", "Keep-Alive");
+            connection.setRequestProperty("user-agent",
+                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            // 建立实际的连接
+            connection.connect();
+            // 获取所有响应头字段
+            Map<String, List<String>> map = connection.getHeaderFields();
+            // 遍历所有的响应头字段
+            for (String key : map.keySet()) {
+                System.out.println(key + "--->" + map.get(key));
+            }
+            // 定义 BufferedReader输入流来读取URL的响应
+            in = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                result += line;
+            }
+        } catch (Exception e) {
+            System.out.println("发送GET请求出现异常！" + e);
+            e.printStackTrace();
+        }
+        // 使用finally块来关闭输入流
+        finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+        return result;
+    }
 	public static String getMapToString(Map<String,String> map){
         Set<String> keySet = map.keySet();
         //将set集合转换为数组
@@ -197,6 +292,9 @@ public class InterfaceUtils {
         for (int i = 0; i < strings.length; i++) {
             //截取一组字符串
             String[] strArray = strings[i].split(":");
+            if (strArray.length <= 1) {
+            	strArray = strings[i].split("=");
+    		}
             //strArray[0]为KEY  strArray[1]为值
             map.put(strArray[0],strArray[1]);
         }
