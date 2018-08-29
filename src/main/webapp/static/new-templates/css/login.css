@@ -1,0 +1,134 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+html,body{
+    width: 100%;
+    height: 100%;
+}
+.box{
+    width: 100%;
+    height: 100%;
+    background-color: #1c77ac;
+    background-image: url("../img/345290849535602555.png");
+    background-position: 0 0;
+    background-size: 100%;
+    position: relative;
+}
+.content{
+    width: 990px;
+    height: 460px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    background: url("../img/281152138207072968.png");
+    background-size: 100%;
+}
+.input_list{
+    width: 570px;
+    height: 345px;
+    position: absolute;
+    top: 105px;
+    left:410px;
+}
+.input_list>.list{
+    width: 420px;
+    height: 60px;
+    background:#e7f6ff;
+    border: 1px solid #75abcb;
+    margin-bottom: 30px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.input_list>.list>.icon{
+    margin: 20px;
+    width: 16px;
+    height: auto;
+    float: left;
+}
+.input_list>.list>.codeimg{
+    height: 100%;
+    width: 130px;
+    float: right;
+    position: relative;
+    border-left: 1px solid #75abcb;
+}
+.input_list>.list>.codeimg span{
+    width: 100%;
+    height: 60px;
+    display: block;
+    line-height: 60px;
+    font-size: 16px;
+    color: #757575;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.input_list>.list>input{
+    width:auto;
+    height: 100%;
+    float: left;
+    border: none;
+    outline: none;
+    line-height: 100%;
+    text-align: left;
+    color: #757575;
+    font-size: 16px;
+    background: transparent;
+}
+.logo{
+    width: 140px;
+    height: 45px;
+    background: #3893c7;
+    border-radius: 5px;
+    line-height: 45px;
+    text-align: center;
+    color: #fff;
+    font-size: 16px;
+    float: left;
+}
+.remember{
+    width: 140px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    color: #757575;
+    font-size: 16px;
+    float: left;
+    margin-left: 35px;
+    position: relative;
+}
+#color-input-red{
+    position: absolute;
+    top: 12px;
+    left: 0px;
+}
+/*lable标签的大小、位置、背景颜色更改，在css选择时，“+”代表相邻元素，即当前元素的下一元素*/
+#color-input-red +label{
+    display: block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    background: #fff;
+    border: 1px solid #757575;
+    cursor: pointer;
+    position: absolute;
+    top: 12px;
+    left: 0px;
+}
+
+#color-input-red:checked +label::before{
+    display: block;
+    width: 20px;
+    height: 20px;
+    content: "\2714";
+    text-align: center;
+    font-size: 16px;
+    color: #fff;
+    background: #3893c7;
+    border: none;
+}

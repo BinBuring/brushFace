@@ -48,6 +48,161 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	@Autowired
 	ResultDataService resultDataService;
 	/**
+	 * 员工删除
+	 * @param device
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	public ResultData deleteEmp(User user){
+		UfaceToken token = getToken();
+		App app = getApp();
+		Map<String, String> maps = new HashMap<String, String>();
+		maps.put("appId", app.getAppid());
+		maps.put("token", token.getToken());
+		maps.put("guid", user.getId());//员工id
+		String response = null;
+		ResultData hr = new ResultData();
+		try {
+			response = InterfaceUtils.HttpDelete(app.getApiurl()+app.getAppid() + "/person/" +  user.getId(), InterfaceUtils.getMapToString(maps));
+			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
+			System.out.println("=====================================");
+			System.out.println("执行结果：" + response);
+			System.out.println("=====================================");
+		}
+		catch(Exception ex){
+			System.out.println("=====================================");
+			System.out.println("系统异常：" + ex.getMessage());
+			System.out.println("=====================================");
+		}
+		return hr;
+	}
+	/**
+	 * 设备删除
+	 * @param device
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	public ResultData deleteDev(Device dev){
+		UfaceToken token = getToken();
+		App app = getApp();
+		Map<String, String> maps = new HashMap<String, String>();
+		maps.put("appId", app.getAppid());
+		maps.put("token", token.getToken());
+		maps.put("deviceKey", dev.getSeq());//设备序列号
+		String response = null;
+		ResultData hr = new ResultData();
+		try {
+			response = InterfaceUtils.HttpDelete(app.getApiurl()+app.getAppid() + "/device/" +  dev.getSeq(), InterfaceUtils.getMapToString(maps));
+			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
+			System.out.println("=====================================");
+			System.out.println("执行结果：" + response);
+			System.out.println("=====================================");
+		}
+		catch(Exception ex){
+			System.out.println("=====================================");
+			System.out.println("系统异常：" + ex.getMessage());
+			System.out.println("=====================================");
+		}
+		return hr;
+	}
+	/**
+	 * 照片删除
+	 * @param device
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	public ResultData deletePhoto(User user){
+		UfaceToken token = getToken();
+		App app = getApp();
+		Map<String, String> maps = new HashMap<String, String>();
+		maps.put("appId", app.getAppid());
+		maps.put("token", token.getToken());
+		maps.put("guid", user.getPhotoId());//照片id
+		maps.put("personGuid", user.getId());
+		String response = null;
+		ResultData hr = new ResultData();
+		try {
+			response = InterfaceUtils.HttpDelete(app.getApiurl()+app.getAppid() + "/person/" + user.getId()+"/face/"+user.getPhotoId(), InterfaceUtils.getMapToString(maps));
+			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
+			System.out.println("=====================================");
+			System.out.println("执行结果：" + response);
+			System.out.println("=====================================");
+		}
+		catch(Exception ex){
+			System.out.println("=====================================");
+			System.out.println("系统异常：" + ex.getMessage());
+			System.out.println("=====================================");
+		}
+		return hr;
+	}
+	/**
+	 * 添加员工
+	 * @param device
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	public ResultData updateEmp(User user){
+		UfaceToken token = getToken();
+		App app = getApp();
+		Map<String, String> maps = new HashMap<String, String>();
+		maps.put("appId", app.getAppid());
+		maps.put("token", token.getToken());
+		maps.put("guid", user.getId());
+		try {
+			maps.put("name", URLEncoder.encode(user.getName(), "utf-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		maps.put("idNo", user.getIdCard());
+		maps.put("phone", user.getPhone());
+		maps.put("tag", user.getRemarks());
+		maps.put("type", user.getUserType());
+		String response = null;
+		ResultData hr = new ResultData();
+		try {
+			response = InterfaceUtils.HttpPut(app.getApiurl()+app.getAppid() + "/person/"+user.getId(), InterfaceUtils.getMapToString(maps));
+			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
+			System.out.println("=====================================");
+			System.out.println("执行结果：" + response);
+			System.out.println("=====================================");
+		}
+		catch(Exception ex){
+			System.out.println("=====================================");
+			System.out.println("系统异常：" + ex.getMessage());
+			System.out.println("=====================================");
+		}
+		return hr;
+	}
+	/**
+	 * 员工查询
+	 * @param device
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	public ResultData selectEmp(User user){
+		UfaceToken token = getToken();
+		App app = getApp();
+		Map<String, String> maps = new HashMap<String, String>();
+		maps.put("appId", app.getAppid());
+		maps.put("token", token.getToken());
+		maps.put("guid", user.getId());
+		String response = null;
+		ResultData hr = new ResultData();
+		try {
+			response = InterfaceUtils.sendGet(app.getApiurl()+app.getAppid() + "/person/" + user.getId(), InterfaceUtils.getMapToString(maps));
+			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
+			System.out.println("=====================================");
+			System.out.println("执行结果：" + response);
+			System.out.println("=====================================");
+		}
+		catch(Exception ex){
+			System.out.println("=====================================");
+			System.out.println("系统异常：" + ex.getMessage());
+			System.out.println("=====================================");
+		}
+		return hr;
+	}
+	/**
 	 * 人员照片注册
 	 * @param device
 	 * @return
@@ -77,7 +232,8 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		try {
 			//response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getId()+"/face/imageUrl", InterfaceUtils.getMapToString(maps));
 			response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getId()+"/face", InterfaceUtils.getMapToString(maps));
-			//hr = GsonUtils.getObjectFromJson(response, ResultData.class);
+			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
+			System.out.println(hr);
 			System.out.println(hr);
 			System.out.println("=====================================");
 			System.out.println("执行结果：" + response);
@@ -105,6 +261,38 @@ public class InterfaceService extends CrudService<AppDao, App> {
         }      
         return null;      
     }
+	/**
+	 * 人员授权设备
+	 * @param device
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	public ResultData empDev(User user,String devGuids){
+		UfaceToken token = getToken();
+		App app = getApp();
+		Map<String, String> maps = new HashMap<String, String>();
+		maps.put("appId", app.getAppid());
+		maps.put("token", token.getToken());
+		maps.put("guid", user.getId());
+		maps.put("deviceKeys", devGuids);
+		maps.put("passTimes", "");
+		String response = null;
+		ResultData hr = new ResultData();
+		try {
+			response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getId()+"/devices", InterfaceUtils.getMapToString(maps));
+			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
+			System.out.println(hr);
+			System.out.println("=====================================");
+			System.out.println("执行结果：" + response);
+			System.out.println("=====================================");
+		}
+		catch(Exception ex){
+			System.out.println("=====================================");
+			System.out.println("系统异常：" + ex.getMessage());
+			System.out.println("=====================================");
+		}
+		return hr;
+	}
 	/**
 	 * 设备授权人员
 	 * @param device
@@ -217,7 +405,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		long hh = 36000000; //10小时以上更新token
 		//先判断token是否需要更新
 		UfaceToken token = ufaceTokenService.findList(null).get(0);
-		System.out.println(token.getCreateDate());
 		if (token.getCreateDate().getTime()+hh > new Date().getTime()) {  //有效期内
 			return token;
 		}else {
@@ -255,6 +442,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println(response);
 			ResultData hr = GsonUtils.getObjectFromJson(response, ResultData.class);
 			resultDataService.save(hr);
+			token.setToken(hr.getData().toString());
 			System.out.println("=====================================");
 			System.out.println("执行结果：" + response);
 			System.out.println("=====================================");

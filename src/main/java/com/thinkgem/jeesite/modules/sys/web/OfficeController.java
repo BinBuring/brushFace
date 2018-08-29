@@ -129,7 +129,7 @@ public class OfficeController extends BaseController {
 		
 		addMessage(redirectAttributes, "保存机构'" + office.getName() + "'成功");
 		String id = "0".equals(office.getParentId()) ? "" : office.getParentId();
-		return "redirect:" + adminPath + "/sys/office/list?id="+id+"&parentIds="+office.getParentIds();
+		return "redirect:" + adminPath + "/sys/office/list?repage";
 	}
 	
 	@RequiresPermissions("sys:office:edit")
@@ -145,7 +145,7 @@ public class OfficeController extends BaseController {
 			officeService.delete(office);
 			addMessage(redirectAttributes, "删除机构成功");
 //		}
-		return "redirect:" + adminPath + "/sys/office/list?id="+office.getParentId()+"&parentIds="+office.getParentIds();
+		return "redirect:" + adminPath + "/sys/office/list?repage";
 	}
 
 	/**

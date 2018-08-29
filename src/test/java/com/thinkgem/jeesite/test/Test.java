@@ -6,10 +6,14 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
 import org.h2.util.New;
+
+import com.thinkgem.jeesite.common.utils.GsonUtils;
 
 import sun.misc.BASE64Encoder;
 
@@ -31,8 +35,7 @@ public class Test {
 	}
 
 	public static void main(String[] args) {
-		File f = new File("C:\\ruanjian\\tomcat7\\webapps\\brushface\\userfiles\\1\\images\\photo\\2018\\08\\timg.jpg");
-		System.out.println(getImageBinary(f));
+		
 		
 	}
 }

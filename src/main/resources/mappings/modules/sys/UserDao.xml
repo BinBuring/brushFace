@@ -77,6 +77,7 @@
 		a.status,
 		a.sernum,
 		a.photo,
+		a.photo_id AS "photoId",
 		a.id_card AS "idCard",
 		a.create_by AS "createBy.id",
 		a.create_date,
@@ -256,6 +257,7 @@
 			remarks, 
 			login_flag, 
 			photo, 
+			photo_id,
 			del_flag,
 			start_date,
 			end_date,
@@ -280,6 +282,7 @@
 			#{remarks}, 
 			#{loginFlag}, 
 			#{photo}, 
+			#{photoId},
 			#{delFlag},
 			#{startDate},
 			#{endDate},
@@ -306,6 +309,7 @@
 			remarks = #{remarks},
 			login_flag = #{loginFlag},
 			photo = #{photo},
+			photo_id = #{photoId},
 			auth_phone = #{authPhone},
 			status = #{status},
 			id_card = #{idCard}
@@ -338,6 +342,7 @@
 			update_date = #{updateDate}, 
 			remarks = #{remarks},
 			photo = #{photo},
+			photo_id = #{photoId},
 			status = #{status}
 		WHERE id = #{id}
 	</update>

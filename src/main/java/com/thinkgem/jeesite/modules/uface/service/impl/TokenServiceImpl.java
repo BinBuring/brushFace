@@ -52,8 +52,8 @@ public class TokenServiceImpl implements TokenService{
 	@Value("${uface.api.secret}")
 	String appSecret;
 	
-	@Autowired 
-	TokenDao tokenDao;
+	//@Autowired 
+	//TokenDao tokenDao;
 	
 	/**   
 	 * <p>Title：selectByState</p>   
@@ -65,11 +65,12 @@ public class TokenServiceImpl implements TokenService{
 	public UfaceToken getToken() {
 		// TODO Auto-generated method stub
 		
-		UfaceToken token = tokenDao.selectByState();
-		if(token == null) {
-			token = createToken();
-			tokenDao.insert(token.getToken());
-		}
+		UfaceToken token = new UfaceToken();//tokenDao.selectByState();
+		token.setToken("ecd679a5057c18b34c1603cf5ff38ef8205f30ff9cb6a460c48ca4e730ad235c");
+		//if(token == null) {
+		//	token = createToken();
+		//	tokenDao.insert(token.getToken());
+		//}
 		
 		return token;
 	}

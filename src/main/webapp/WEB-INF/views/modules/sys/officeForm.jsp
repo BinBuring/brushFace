@@ -3,156 +3,123 @@
 <html>
 <head>
 	<title>部门管理</title>
+	 
 	<meta name="decorator" content="default"/>
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$("#name").focus();
-			$("#inputForm").validate({
-				submitHandler: function(form){
-					loading('正在提交，请稍等...');
-					form.submit();
-				},
-				errorContainer: "#messageBox",
-				errorPlacement: function(error, element) {
-					$("#messageBox").text("输入有误，请先更正。");
-					if (element.is(":checkbox")||element.is(":radio")||element.parent().is(".input-append")){
-						error.appendTo(element.parent().parent());
-					} else {
-						error.insertAfter(element);
+	<link rel="stylesheet" href="${ctxStatic}/new-templates/css/index.css">
+	<style>
+			.scInput {
+				padding: 0!important;
+			}
+			.error{
+				text-align: left!important;
+			}
+			#companyButton,#officeButton{
+				height: 31px!important;
+				line-height: 31px!important;
+				display: none!important;
+			}
+			
+			.notView {
+				display: none!important;
+			}
+		</style>
+		<script>
+		$(function () {
+			$("#officeView").val($("#officeName").val())
+			var urlParam = getRequest();
+			if(urlParam && urlParam.type == "first"){
+				$("#first").hide();
+				$("#grade").val(1)
+			}else{
+				$("#grade").val(2)
+			}
+			$("#officeView").click(function(){
+		// 正常打开	
+		$.jBox.open("iframe:/brushface/a/tag/treeselect?url="+encodeURIComponent("/sys/office/treeData?type=2")+"&module=&checked=&extId=&isAll=", "选择部门", 300, 420, {
+			ajaxData:{selectIds: $("#officeId").val()},buttons:{"确定":"ok", "关闭":true}, submit:function(v, h, f){
+				if (v=="ok"){
+					var tree = h.find("iframe")[0].contentWindow.tree;//h.find("iframe").contents();
+					var ids = [], names = [], nodes = [];
+					if ("" == "true"){
+						nodes = tree.getCheckedNodes(true);
+					}else{
+						nodes = tree.getSelectedNodes();
 					}
+					for(var i=0; i<nodes.length; i++) {//
+						if (nodes[i].isParent){
+							top.$.jBox.tip("不能选择父节点（"+nodes[i].name+"）请重新选择。");
+							return false;
+						}//
+						ids.push(nodes[i].id);
+						names.push(nodes[i].name);//
+						break; // 如果为非复选框选择，则返回第一个选择  
+					}
+					$("#officeId").val(ids.join(",").replace(/u_/ig,""));
+					$("#officeName").val(names.join(","));
+					$("#officeView").val($("#officeName").val());
+				}//
+				if(typeof officeTreeselectCallBack == 'function'){
+					officeTreeselectCallBack(v, h, f);
 				}
-			});
+			}, loaded:function(h){
+				$(".jbox-content", top.document).css("overflow-y","hidden");
+			}
 		});
+	});
+		})
+		
+		function getRequest() {
+			var url = window.location.search;
+			var theRequest = null;
+			if(url.indexOf("?") != -1) {
+				theRequest = new Object;
+				var str = url.substr(1);
+				strs = str.split("&");
+				for(var i = 0; i < strs.length; i++) {
+					theRequest[strs[i].split("=")[0]] = decodeURI(strs[i].split("=")[1]);
+				}
+			}
+			return theRequest;
+		}
 	</script>
 </head>
 <body>
-	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/sys/office/list?id=${office.parent.id}&parentIds=${office.parentIds}">部门列表</a></li>
-		<li class="active"><a href="${ctx}/sys/office/form?id=${office.id}&parent.id=${office.parent.id}">部门<shiro:hasPermission name="sys:office:edit">${not empty office.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="sys:office:edit">查看</shiro:lacksPermission></a></li>
-	</ul><br/>
-	<form:form id="inputForm" modelAttribute="office" action="${ctx}/sys/office/save" method="post" class="form-horizontal">
-		<form:hidden path="id"/>
-		<sys:message content="${message}"/>
-		<div class="control-group">
-			<label class="control-label">上级部门:</label>
-			<div class="controls">
-                <sys:treeselect id="office" name="parent.id" value="${office.parent.id}" labelName="parent.name" labelValue="${office.parent.name}"
-					title="部门" url="/sys/office/treeData" extId="${office.id}" cssClass="" allowClear="${office.currentUser.admin}"/>
-			</div>
-		</div>
-		<%-- <div class="control-group">
-			<label class="control-label">归属区域:</label>
-			<div class="controls">
-                <sys:treeselect id="area" name="area.id" value="${office.area.id}" labelName="area.name" labelValue="${office.area.name}"
-					title="区域" url="/sys/area/treeData" cssClass="required"/>
-			</div>
-		</div> --%>
-		<div class="control-group">
-			<label class="control-label">部门名称:</label>
-			<div class="controls">
-				<form:input path="name" htmlEscape="false" maxlength="50" class="required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<%-- <div class="control-group">
-			<label class="control-label">部门编码:</label>
-			<div class="controls">
-				<form:input path="code" htmlEscape="false" maxlength="50"/>
-			</div>
-		</div> --%>
-		<%-- <div class="control-group">
-			<label class="control-label">部门类型:</label>
-			<div class="controls">
-				<form:select path="type" class="input-medium">
-					<form:options items="${fns:getDictList('sys_office_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</div>
-		</div> --%>
-		<div class="control-group">
-			<label class="control-label">部门级别:</label>
-			<div class="controls">
-				<form:select path="grade" class="input-medium">
-					<form:options items="${fns:getDictList('sys_office_grade')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</div>
-		</div>
-		<%-- <div class="control-group">
-			<label class="control-label">是否可用:</label>
-			<div class="controls">
-				<form:select path="useable">
-					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</div>
-		</div> --%>
-		<%-- <div class="control-group">
-			<label class="control-label">主负责人:</label>
-			<div class="controls">
-				 <sys:treeselect id="primaryPerson" name="primaryPerson.id" value="${office.primaryPerson.id}" labelName="office.primaryPerson.name" labelValue="${office.primaryPerson.name}"
-					title="用户" url="/sys/office/treeData?type=3" allowClear="true" notAllowSelectParent="true"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">副负责人:</label>
-			<div class="controls">
-				 <sys:treeselect id="deputyPerson" name="deputyPerson.id" value="${office.deputyPerson.id}" labelName="office.deputyPerson.name" labelValue="${office.deputyPerson.name}"
-					title="用户" url="/sys/office/treeData?type=3" allowClear="true" notAllowSelectParent="true"/>
-			</div>
-		</div> 
-		<div class="control-group">
-			<label class="control-label">联系地址:</label>
-			<div class="controls">
-				<form:input path="address" htmlEscape="false" maxlength="50"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">邮政编码:</label>
-			<div class="controls">
-				<form:input path="zipCode" htmlEscape="false" maxlength="50"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">负责人:</label>
-			<div class="controls">
-				<form:input path="master" htmlEscape="false" maxlength="50"/>
-			</div>
-		</div>--%>
-		<div class="control-group">
-			<label class="control-label">电话:</label>
-			<div class="controls">
-				<form:input path="phone" htmlEscape="false" maxlength="50"/>
-				<form:hidden path="useable" value="1" htmlEscape="false" maxlength="50"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">传真:</label>
-			<div class="controls">
-				<form:input path="fax" htmlEscape="false" maxlength="50"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">邮箱:</label>
-			<div class="controls">
-				<form:input path="email" htmlEscape="false" maxlength="50"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">备注:</label>
-			<div class="controls">
-				<form:textarea path="remarks" htmlEscape="false" rows="3" maxlength="200" class="input-xlarge"/>
-			</div>
-		</div>
-		<%-- <c:if test="${empty office.id}">
-			<div class="control-group">
-				<label class="control-label">快速添加下级部门:</label>
-				<div class="controls">
-					<form:checkboxes path="childDeptList" items="${fns:getDictList('sys_office_common')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+	<div class="workcontent add_big" style="display: block;">
+			<div class="big_top">
+				<div class="operation fl">
+					<div>添加一级部门</div>
 				</div>
 			</div>
-		</c:if> --%>
-		<div class="form-actions">
-			<shiro:hasPermission name="sys:office:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
-			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+				<form:form id="inputForm" modelAttribute="office" action="${ctx}/sys/office/save" method="post" class="form-horizontal">
+					<form:hidden path="id"/>
+						<sys:message content="${message}"/>
+				    <div class="big_bottom short">            
+					<div id="first">
+						<label>上级部门：</label>
+						<sys:treeselect id="office" name="parent.id" value="${office.parent.id}" labelName="parent.name" labelValue="${office.parent.name}"
+						title="部门" url="/sys/office/treeData" extId="${office.id}" cssClass="scInput required notView" allowClear="${office.currentUser.admin}"/>
+						<input type="text" name="" id="officeView" maxlength="16" value="" class="scInput name" placeholder="文字长度为1-20个字符">						
+					</div>
+					<div >
+						<label>部门名称：</label>
+						<form:input path="name" htmlEscape="false" maxlength="50"  class="scInput " placeholder="请输入文字1-20个字" />
+											
+					</div>
+					<div id="type">
+						<div class="controls">
+						<input type="hidden" value="1" name='grade' id="grade" />
+					</div>	
+					
+					<div class="button" style="text-align: left;">
+						<shiro:hasPermission name="sys:office:edit"><input type="submit" class="confirm fl" value="确认"></shiro:hasPermission>
+						<input type="button" class="return fr" onclick="history.go(-1)" value="返回">
+					</div>
+					</div>
+				</div>
+			</form:form>
+			
 		</div>
-	</form:form>
+</div>
 </body>
+	
 </html>
