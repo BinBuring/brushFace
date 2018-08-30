@@ -20,28 +20,7 @@
 		}
 		
 	</style>
-    <script type="text/javascript">
-		$(document).ready(function() {
-			$("#loginForm").validate({
-				rules: {
-					validateCode: {remote: "${pageContext.request.contextPath}/servlet/validateCodeServlet"}
-				},
-				messages: {
-					username: {required: "请填写用户名."},password: {required: "请填写密码."},
-					validateCode: {remote: "验证码不正确.", required: "请填写验证码."}
-				},
-				errorLabelContainer: "#messageBox",
-				errorPlacement: function(error, element) {
-					error.appendTo($("#loginError").parent());
-				} 
-			});
-		});
-		// 如果在框架或在对话框中，则弹出提示并跳转到首页
-		if(self.frameElement && self.frameElement.tagName == "IFRAME" || $('#left').length > 0 || $('.jbox').length > 0){
-			alert('未登录或登录超时。请重新登录，谢谢！');
-			top.location = "${ctx}";
-		}
-	</script>
+    
 </head>
 <body>
 	
@@ -60,7 +39,7 @@
                </div>
                <div class="code list">
                    <img src="${ctxStatic}/new-templates/img/code.png" alt="" class="icon">
-                   <input type="text" placeholder="验证码">
+                   <input type="text" placeholder="验证码" id="code">
                    <!--<img src="${ctxStatic}/new-templates/img/code_03.jpg" alt="">-->
                    <div id="drawcode" class="codeimg" >
                        <span>获取验证码</span>
@@ -86,6 +65,7 @@
 </body>
 
 <script>
+	var code = '';
     var pool="abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLIMNOPQRSTUVWSYZ1234567890";
     //1.新建一个函数产生随机数
     function rn(min,max){
@@ -112,9 +92,11 @@
 
         ctx.fillStyle=gradient;
         ctx.fillRect(0,0,w,h);
+         code = ''
         //4.随机产生字符串
         for(var i=0;i<4;i++){
             var c=pool[rn(0,pool.length)];//随机的字
+            code +=c;
             var fs=rn(24,50);//字体的大小
             var deg=rn(-30,30);//字体的旋转角度
             // 设置文字阴影的颜色为黑色，透明度为20%
@@ -160,9 +142,40 @@
         drawcode();
     }
      $(function () {
+     	$("#drawcode").click();
    			 $(".logo").click(function () {
+   			 	var insertCode = $("#code").val();
+   			 	if(!insertCode || insertCode.toUpperCase() != code.toUpperCase()){
+   			 		$("#messageBox").show();
+   			 		$("#loginError").text('验证码不正确');
+   			 		$("#drawcode").click();
+   			 		$("#code").val('');
+   			 		return;
+   			 	}
     	$("#loginForm").submit()
     })
    })
 </script>
+<script type="text/javascript">
+		$(document).ready(function() {
+			$("#loginForm").validate({
+				rules: {
+					validateCode: {remote: "${pageContext.request.contextPath}/servlet/validateCodeServlet"}
+				},
+				messages: {
+					username: {required: "请填写用户名."},password: {required: "请填写密码."},
+					validateCode: {remote: "验证码不正确.", required: "请填写验证码."}
+				},
+				errorLabelContainer: "#messageBox",
+				errorPlacement: function(error, element) {
+					error.appendTo($("#loginError").parent());
+				} 
+			});
+		});
+		// 如果在框架或在对话框中，则弹出提示并跳转到首页
+		if(self.frameElement && self.frameElement.tagName == "IFRAME" || $('#left').length > 0 || $('.jbox').length > 0){
+			alert('未登录或登录超时。请重新登录，谢谢！');
+			top.location = "${ctx}";
+		}
+	</script>
 </html>

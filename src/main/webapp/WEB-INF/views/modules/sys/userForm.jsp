@@ -62,7 +62,11 @@
 						<label>用户登录名：</label>
 						<input id="oldLoginName" name="oldLoginName" type="hidden" value="${user.loginName}">
 						<form:input path="loginName" htmlEscape="false" maxlength="50" class="scInput chang" placeholder="请输入用户登录名" />
-						
+					</div>
+					<div >
+						<label>用户名：</label>
+						<input id="name" name="name" type="hidden" value="${user.name}">
+						<form:input path="name" htmlEscape="false" maxlength="50" class="scInput chang" placeholder="请输入用户登录名" />
 					</div>
 					<div id="type">
 						<label>用户类型：</label>

@@ -68,7 +68,7 @@
                     <p><img src="${ctxStatic}/new-templates/img/icon_7.jpg" alt=""><span>员工管理</span></p>
                     <div class="drop_down">
                         <div class="on"><a href="javascript:;" data="${ctx}/sys/emp/list" onclick="chageIfr(this);"  target="employee_list">员工列表</a></div>
-                        <div><a href="employee_records.html" target="employee_list">员工记录</a></div>
+                        <div><a data="${ctx}/brf/empRecord/list" onclick="chageIfr(this);" target="employee_list" >员工记录</a></div>
                         <div><a href="deferred_staff.html" target="employee_list">需延期员工列表</a></div>
                         <div><a data="${ctx}/sys/office/list" onclick="chageIfr(this);" target="employee_list">部门管理</a></div>
                     </div>
@@ -97,7 +97,7 @@
         </div>
         <!--内容-->
         <div class="content">
-            <iframe name="employee_list" id="mainFrame" width=100% frameborder=0  height=810 scrolling=no src="${ctx}/sys/emp/list"></iframe>
+            <iframe name="employee_list" id="mainFrame" width=100% frameborder=0  height=810 scrolling=auto src="${ctx}/sys/emp/list"></iframe>
         </div>
     </div>
 

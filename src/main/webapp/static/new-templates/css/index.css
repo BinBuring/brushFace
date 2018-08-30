@@ -85,7 +85,6 @@ html,body{
 }
 .container{
     width: 100%;
-    min-width: 1500px;
     height: calc(100% - 83px);
     overflow: hidden;
 }

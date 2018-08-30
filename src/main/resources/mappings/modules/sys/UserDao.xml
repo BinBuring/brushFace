@@ -60,6 +60,7 @@
 	
     <sql id="userColumns">
     	a.id,
+    	a.guid,
     	a.company_id AS "company.id",
     	a.office_id AS "office.id",
     	a.login_name,
@@ -67,6 +68,7 @@
     	a.no,
 		a.name,
 		a.email,
+		a.issh,
 		a.phone,
 		a.mobile,
 		a.user_type AS "userType",
@@ -139,6 +141,16 @@
 		<include refid="userJoins"/><!-- 
 		LEFT JOIN sys_role_office ro ON ro.role_id = r.id -->
 		WHERE a.id = #{id}
+	</select>
+		<!-- 根据编号获得用户 -->
+	<select id="getByNo" resultType="User">
+		SELECT
+			<include refid="userColumns"/><!-- ,
+			ro.office_id AS "roleList.officeList.id" -->
+		FROM sys_user a
+		<include refid="userJoins"/><!-- 
+		LEFT JOIN sys_role_office ro ON ro.role_id = r.id -->
+		WHERE a.no = #{no}
 	</select>
 	
 	<!-- 根据登录名查询用户 -->
@@ -240,6 +252,7 @@
 	<insert id="insert">
 		INSERT INTO sys_user(
 			id, 
+			guid,
 			company_id, 
 			office_id, 
 			login_name, 
@@ -262,9 +275,11 @@
 			start_date,
 			end_date,
 			status,
-			id_card 
+			id_card,
+			issh
 		) VALUES (
 			#{id}, 
+			#{guid},
 			#{company.id}, 
 			#{office.id}, 
 			#{loginName}, 
@@ -287,13 +302,15 @@
 			#{startDate},
 			#{endDate},
 			#{status},
-			#{idCard}
+			#{idCard},
+			#{issh}
 		)
 	</insert>
 	
 	<!-- 更新用户 -->
 	<update id="update">
 		UPDATE sys_user SET 
+			guid = #{guid},
 			company_id = #{company.id}, 
 			office_id = #{office.id}, 
 			login_name = #{loginName}, 
@@ -312,7 +329,8 @@
 			photo_id = #{photoId},
 			auth_phone = #{authPhone},
 			status = #{status},
-			id_card = #{idCard}
+			id_card = #{idCard},
+			issh = #{issh}
 		WHERE id = #{id}
 	</update>
 	
@@ -335,6 +353,7 @@
 	<!-- 更新用户信息  -->
 	<update id="updateUserInfo">
 		UPDATE sys_user SET 
+			guid = #{guid},
 			email = #{email}, 
 			phone = #{phone}, 
 			mobile = #{mobile}, 

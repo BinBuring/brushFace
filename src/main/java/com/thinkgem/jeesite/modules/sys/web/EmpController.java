@@ -31,6 +31,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.GsonUtils;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.InterfaceUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
@@ -118,10 +119,9 @@ public class EmpController extends BaseController {
 		return page;
 	}
 
-	@SuppressWarnings("unused")
 	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "empsave")
-	public String empsave(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
+	public String empsave(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes){
 		if(Global.isDemoMode()){
 			addMessage(redirectAttributes, "演示模式，不允许操作！");
 			return "redirect:" + adminPath + "/sys/emp/list?repage";
@@ -142,6 +142,11 @@ public class EmpController extends BaseController {
 			if (roleIdList.contains(r.getId())){
 				roleList.add(r);
 			}
+		}
+		//判断审核状态，如果未审核，只在本地修改，不上传到云端
+		if (StringUtils.isNotEmpty(user.getId()) &&user.getStatus().equals("0")) {
+			systemService.saveUser(user);
+			return "redirect:" + adminPath + "/sys/emp/list?repage";
 		}
 		//先到云端查询是否已存在这个员工，有则修改，无则添加
 		ResultData select = interfaceService.selectEmp(user);
@@ -166,50 +171,53 @@ public class EmpController extends BaseController {
 			}
 		}else {
 			user.setLoginFlag("0");
-			user.setStatus("0");
-			user.setAuthPhone("1");
+			user.setStatus("0");	  //
+			user.setAuthPhone("1");  //设置照片状态为未授权
+			user.setIssh("1");
 			user.setRoleList(roleList);
-			//在云端上保存员工
-			ResultData data = interfaceService.createEmp(user);
 			// 保存员工信息
-			if(data.getSuccess().equals("true")){
-				String json = GsonUtils.getJsonFromObject(data.getData());
-				Map<String, String> map = InterfaceUtils.getStringToMap(json);
 				user.setIsNewRecord(true);
-				user.setId(map.get("guid"));
+				user.setId(IdGen.uuid());
 				//通过照片url判断是否需要上传照片
-				if (data.getSuccess().equals("true")&&StringUtils.isNotEmpty(user.getPhoto())) {
+				if (StringUtils.isNotEmpty(user.getPhoto())) {
 					ResultData photo = interfaceService.empimageUrl(user,request);
-					Map<String, String> dataMap = InterfaceUtils.getStringToMap(photo.getData().toString());
-					user.setPhotoId(dataMap.get("guid"));
+					if (photo!=null) {
+						Map<String, String> dataMap = InterfaceUtils.getStringToMap(photo.getData().toString());
+						user.setPhotoId(dataMap.get("guid"));
+					}
 				}
 				systemService.saveUser(user);
 				addMessage(redirectAttributes, "保存员工'" + user.getName() + "'成功");
-			}else {
-				addMessage(redirectAttributes, "保存员工'" + user.getName() + "'失败");
-			}
 		}
 		return "redirect:" + adminPath + "/sys/emp/list?repage";
 	}
 	
 	@RequestMapping(value = "audit")
-	public String audit(User user,RedirectAttributes redirectAttributes){
+	public String audit(User user,RedirectAttributes redirectAttributes,HttpServletRequest request){
 		if (user.getPhoto()==null) {
 			addMessage(redirectAttributes, "审核员工" + user.getName() + "'失败,该员工头像不符合");
 			return "redirect:" + adminPath + "/sys/emp/list?repage";
 		}
-		if (user.getAuthPhone().equals("1")) {
+		/*if (user.getAuthPhone().equals("1")) {
 			addMessage(redirectAttributes, "审核员工" + user.getName() + "'失败，该员工未授权");
 			return "redirect:" + adminPath + "/sys/emp/list?repage";
-		}
+		}*/
 		//根据有效期判断用户状态
 		long now = new Date().getTime();
 		if (user.getStartDate().getTime() < now && user.getEndDate().getTime() > now) {
 			user.setStatus("1");
 		} else if (user.getStartDate().getTime() > now) {
-			user.setStatus("2");
+			user.setStatus("2");     
 		}else {
 			user.setStatus("3");
+		}
+		//在云端上保存员工
+		ResultData data = interfaceService.createEmp(user);
+		interfaceService.empimageUrl(user, request);
+		if (data != null && data.getSuccess().equals("true")) {
+			Map<String, String> map = InterfaceUtils.getStringToMap(data.getData().toString());
+			user.setGuid(map.get("guid"));
+			systemService.saveUser(user);
 		}
 		addMessage(redirectAttributes, "审核员工" + user.getName() + "'成功");
 		return "redirect:" + adminPath + "/sys/emp/list?repage";

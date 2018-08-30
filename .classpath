@@ -107,7 +107,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-transcoder/1.7/batik-transcoder-1.7.jar" sourcepath="M2_REPO/org/apache/xmlgraphics/batik-transcoder/1.7/batik-transcoder-1.7-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/fop/0.94/fop-0.94.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/xmlgraphics-commons/1.2/xmlgraphics-commons-1.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar" sourcepath="M2_REPO/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/avalon/framework/avalon-framework-api/4.3.1/avalon-framework-api-4.3.1.jar" sourcepath="M2_REPO/org/apache/avalon/framework/avalon-framework-api/4.3.1/avalon-framework-api-4.3.1-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/avalon/framework/avalon-framework-impl/4.3.1/avalon-framework-impl-4.3.1.jar" sourcepath="M2_REPO/org/apache/avalon/framework/avalon-framework-impl/4.3.1/avalon-framework-impl-4.3.1-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-bridge/1.7/batik-bridge-1.7.jar" sourcepath="M2_REPO/org/apache/xmlgraphics/batik-bridge/1.7/batik-bridge-1.7-sources.jar"/>

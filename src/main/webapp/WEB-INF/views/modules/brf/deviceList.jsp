@@ -191,7 +191,7 @@
                 <th width="17%"><fmt:formatDate value="${device.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/></th>
                <shiro:hasPermission name="brf:device:edit"><th width="28%">
     				<a href="javaScript:;">状态查询</a>
-    				<a href="${ctx}/brf/device/authorization?id=${device.id}">人员授权</a>
+    				<%-- <a href="${ctx}/brf/device/authorization?id=${device.id}">人员授权</a> --%>
 					<a  href="javascript:;" onclick="delDev('${device.id}')">删除</a>
 					<a href="javaScript:;">设备同步</a>
 				</th></shiro:hasPermission>

@@ -97,7 +97,9 @@ public class SystemService extends BaseService implements InitializingBean {
 		page.setList(userDao.findList(user));
 		return page;
 	}
-	
+	public User getByNo(String no) {
+		return userDao.getByNo(no);
+	}
 	/**
 	 * 无分页查询人员列表
 	 * @param user
@@ -127,6 +129,12 @@ public class SystemService extends BaseService implements InitializingBean {
 		return list;
 	}
 	
+	
+	@Transactional(readOnly = false)
+	public void insertUser(User user) {
+		user.preInsert();
+		userDao.insert(user);
+	}
 	@Transactional(readOnly = false)
 	public void saveUser(User user) {
 		//if (StringUtils.isBlank(user.getId())){
@@ -143,7 +151,7 @@ public class SystemService extends BaseService implements InitializingBean {
 			user.preUpdate();
 			userDao.update(user);
 		}
-		if (StringUtils.isNotBlank(user.getId())){
+		if (user.getLoginFlag().equals("0")&&!user.getIssh().equals("2")&&StringUtils.isNotBlank(user.getId())){
 			// 更新用户与角色关联
 			userDao.deleteUserRole(user);
 			if (user.getRoleList() != null && user.getRoleList().size() > 0){
@@ -540,6 +548,8 @@ public class SystemService extends BaseService implements InitializingBean {
 			identityService.deleteUser(userId);
 		}
 	}
+
+
 	
 	///////////////// Synchronized to the Activiti end //////////////////
 	

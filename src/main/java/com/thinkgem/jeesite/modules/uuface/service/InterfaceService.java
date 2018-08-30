@@ -59,11 +59,11 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
-		maps.put("guid", user.getId());//员工id
+		maps.put("guid", user.getGuid());//员工id
 		String response = null;
 		ResultData hr = new ResultData();
 		try {
-			response = InterfaceUtils.HttpDelete(app.getApiurl()+app.getAppid() + "/person/" +  user.getId(), InterfaceUtils.getMapToString(maps));
+			response = InterfaceUtils.HttpDelete(app.getApiurl()+app.getAppid() + "/person/" +  user.getGuid(), InterfaceUtils.getMapToString(maps));
 			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
 			System.out.println("=====================================");
 			System.out.println("执行结果：" + response);
@@ -118,11 +118,11 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		maps.put("guid", user.getPhotoId());//照片id
-		maps.put("personGuid", user.getId());
+		maps.put("personGuid", user.getGuid());
 		String response = null;
 		ResultData hr = new ResultData();
 		try {
-			response = InterfaceUtils.HttpDelete(app.getApiurl()+app.getAppid() + "/person/" + user.getId()+"/face/"+user.getPhotoId(), InterfaceUtils.getMapToString(maps));
+			response = InterfaceUtils.HttpDelete(app.getApiurl()+app.getAppid() + "/person/" + user.getGuid()+"/face/"+user.getPhotoId(), InterfaceUtils.getMapToString(maps));
 			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
 			System.out.println("=====================================");
 			System.out.println("执行结果：" + response);
@@ -147,7 +147,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
-		maps.put("guid", user.getId());
+		maps.put("guid", user.getGuid());
 		try {
 			maps.put("name", URLEncoder.encode(user.getName(), "utf-8"));
 		} catch (UnsupportedEncodingException e) {
@@ -160,7 +160,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		String response = null;
 		ResultData hr = new ResultData();
 		try {
-			response = InterfaceUtils.HttpPut(app.getApiurl()+app.getAppid() + "/person/"+user.getId(), InterfaceUtils.getMapToString(maps));
+			response = InterfaceUtils.HttpPut(app.getApiurl()+app.getAppid() + "/person/"+user.getGuid(), InterfaceUtils.getMapToString(maps));
 			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
 			System.out.println("=====================================");
 			System.out.println("执行结果：" + response);
@@ -185,11 +185,11 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
-		maps.put("guid", user.getId());
+		maps.put("guid", user.getGuid());
 		String response = null;
 		ResultData hr = new ResultData();
 		try {
-			response = InterfaceUtils.sendGet(app.getApiurl()+app.getAppid() + "/person/" + user.getId(), InterfaceUtils.getMapToString(maps));
+			response = InterfaceUtils.sendGet(app.getApiurl()+app.getAppid() + "/person/" + user.getGuid(), InterfaceUtils.getMapToString(maps));
 			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
 			System.out.println("=====================================");
 			System.out.println("执行结果：" + response);
@@ -199,6 +199,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println("=====================================");
 			System.out.println("系统异常：" + ex.getMessage());
 			System.out.println("=====================================");
+			return null;
 		}
 		return hr;
 	}
@@ -214,7 +215,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
-		maps.put("guid", user.getId());
+		maps.put("guid", user.getGuid());
 		//设置照片的路径
 		String path = request.getSession().getServletContext().getRealPath("/");
 		String url = user.getPhoto();
@@ -230,8 +231,8 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		String response = null;
 		ResultData hr = new ResultData();
 		try {
-			//response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getId()+"/face/imageUrl", InterfaceUtils.getMapToString(maps));
-			response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getId()+"/face", InterfaceUtils.getMapToString(maps));
+			//response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getGuid()+"/face/imageUrl", InterfaceUtils.getMapToString(maps));
+			response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getGuid()+"/face", InterfaceUtils.getMapToString(maps));
 			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
 			System.out.println(hr);
 			System.out.println(hr);
@@ -273,13 +274,13 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
-		maps.put("guid", user.getId());
+		maps.put("guid", user.getGuid());
 		maps.put("deviceKeys", devGuids);
 		maps.put("passTimes", "");
 		String response = null;
 		ResultData hr = new ResultData();
 		try {
-			response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getId()+"/devices", InterfaceUtils.getMapToString(maps));
+			response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getGuid()+"/devices", InterfaceUtils.getMapToString(maps));
 			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
 			System.out.println(hr);
 			System.out.println("=====================================");
