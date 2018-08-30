@@ -166,6 +166,7 @@ public class EmpRecordController extends BaseController {
             return "上传文件失败,请检查上传的文件,IOException";
         }
 	}
+
 	@RequestMapping(value = "delete")
 	public String delete(EmpRecord empRecord, RedirectAttributes redirectAttributes) {
 		empRecordService.delete(empRecord);

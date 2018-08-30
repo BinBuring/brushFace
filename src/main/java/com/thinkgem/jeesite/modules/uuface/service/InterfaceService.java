@@ -234,8 +234,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			//response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getGuid()+"/face/imageUrl", InterfaceUtils.getMapToString(maps));
 			response = InterfaceUtils.HttpPost(app.getApiurl()+app.getAppid() + "/person/"+ user.getGuid()+"/face", InterfaceUtils.getMapToString(maps));
 			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
-			System.out.println(hr);
-			System.out.println(hr);
 			System.out.println("=====================================");
 			System.out.println("执行结果：" + response);
 			System.out.println("=====================================");
@@ -247,6 +245,11 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		}
 		return hr;
 	}	
+	/**
+	 * base64加密
+	 * @param f
+	 * @return
+	 */
 	private  String getImageBinary(File f){     
 		BASE64Encoder encoder = new BASE64Encoder();   //加密
         BufferedImage bi;      

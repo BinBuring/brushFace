@@ -119,6 +119,7 @@ public class EmpController extends BaseController {
 		return page;
 	}
 
+	@SuppressWarnings("unused")
 	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "empsave")
 	public String empsave(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes){
@@ -170,11 +171,11 @@ public class EmpController extends BaseController {
 				addMessage(redirectAttributes, "保存员工'" + user.getName() + "'失败");
 			}
 		}else {
-			user.setLoginFlag("0");
-			user.setStatus("0");	  //
+			user.setLoginFlag("0");	//设置登陆为不可登陆
+			user.setStatus("0");	  //设置状态为未审核
 			user.setAuthPhone("1");  //设置照片状态为未授权
-			user.setIssh("1");
-			user.setRoleList(roleList);
+			user.setIssh("1");		//需要审核
+			user.setRoleList(roleList);	//添加角色
 			// 保存员工信息
 				user.setIsNewRecord(true);
 				user.setId(IdGen.uuid());
