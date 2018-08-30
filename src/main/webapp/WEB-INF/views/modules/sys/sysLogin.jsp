@@ -67,6 +67,7 @@
 <script>
 	var code = '';
     var pool="abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLIMNOPQRSTUVWSYZ1234567890";
+    var c1=document.getElementById("c1");
     //1.新建一个函数产生随机数
     function rn(min,max){
         return  parseInt(Math.random()*(max-min)+min);
@@ -142,6 +143,11 @@
         drawcode();
     }
      $(function () {
+    	$(document).keydown(function(event){
+ 		    if(event.keyCode ==13){
+ 		    	$("#loginForm").submit()
+ 		    }
+ 		});
      	$("#drawcode").click();
    			 $(".logo").click(function () {
    			 	var insertCode = $("#code").val();

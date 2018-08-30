@@ -129,7 +129,7 @@ $(function () {
             }});
     })
 
-    $(".delete").click(function (){
+    /*$(".delete").click(function (){
         for(var i=0;i<$('#result tr').length;i++){
             if($('#result tr').eq(i).css('display')=="table-row"){
                 //当选中的长度等于checkbox的长度的时候,就让控制全选反选的checkbox设置为选中,否则就为未选中
@@ -140,10 +140,12 @@ $(function () {
                     $(".pc_bottom p").html("对不起，请选择要删除的项目")
                     $(".qrcode_popup").css("display","block")
                 }
+                
+                
             }
         }
 
-    })
+    })*/
 
     $(document).on("click",'.edit',function(){
             var a=$(this).attr("name");
@@ -211,10 +213,7 @@ $(function () {
     $(".query").click(function () {
         $(".popup").css("display","none")
     })
-    $("#query").click(function () {
-        $(".popup").css("display","none");
-        window.open("qr_code.html");
-    })
+
    
     $(".return").click(function () {
         $(".all_big").css("display","block")

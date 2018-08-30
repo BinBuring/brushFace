@@ -59,12 +59,12 @@
 			<form:form id="inputForm" modelAttribute="user" action="${ctx}/sys/user/save" method="post" class="form-horizontal">
 				<div class="big_bottom">
 					<div >
-						<label>用户登录名：</label>
+						<label>账号：</label>
 						<input id="oldLoginName" name="oldLoginName" type="hidden" value="${user.loginName}">
 						<form:input path="loginName" htmlEscape="false" maxlength="50" class="scInput chang" placeholder="请输入用户登录名" />
 					</div>
 					<div >
-						<label>用户名：</label>
+						<label>姓名：</label>
 						<input id="name" name="name" type="hidden" value="${user.name}">
 						<form:input path="name" htmlEscape="false" maxlength="50" class="scInput chang" placeholder="请输入用户登录名" />
 					</div>

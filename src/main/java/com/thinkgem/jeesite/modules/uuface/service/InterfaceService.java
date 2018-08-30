@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,6 +74,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println("=====================================");
 			System.out.println("系统异常：" + ex.getMessage());
 			System.out.println("=====================================");
+			return null;
 		}
 		return hr;
 	}
@@ -102,6 +104,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println("=====================================");
 			System.out.println("系统异常：" + ex.getMessage());
 			System.out.println("=====================================");
+			return null;
 		}
 		return hr;
 	}
@@ -132,6 +135,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println("=====================================");
 			System.out.println("系统异常：" + ex.getMessage());
 			System.out.println("=====================================");
+			return null;
 		}
 		return hr;
 	}
@@ -170,6 +174,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println("=====================================");
 			System.out.println("系统异常：" + ex.getMessage());
 			System.out.println("=====================================");
+			return null;
 		}
 		return hr;
 	}
@@ -222,8 +227,8 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		url = user.getPhoto().substring(url.indexOf("/")+1, url.length());
 		url = user.getPhoto().substring(url.indexOf("/")+1, url.length()+1);
 		//TODO 我也不知道为什么+1，有机会研究
-		url = url.replaceAll("/", "\\\\");
-		url = path.substring(0, path.length()-1)+url;
+		/*url = url.replaceAll("/", "\\\\");
+		url = path.substring(0, path.length()-1)+url;*/
 		System.out.println(url);
 		url = getImageBinary(new File(url));
 		//maps.put("imageUrl", "http://124.126.150.115:8080"+user.getPhoto());
@@ -242,6 +247,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println("=====================================");
 			System.out.println("系统异常：" + ex.getMessage());
 			System.out.println("=====================================");
+			return null;
 		}
 		return hr;
 	}	
@@ -259,7 +265,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
             ImageIO.write(bi, "jpg", baos);      
             byte[] bytes = baos.toByteArray();      
 
-            return encoder.encodeBuffer(bytes).trim();      
+            return com.thinkgem.jeesite.common.utils.Base64.encode(bytes);    
         } catch (IOException e) {      
             e.printStackTrace();      
         }      
@@ -294,6 +300,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println("=====================================");
 			System.out.println("系统异常：" + ex.getMessage());
 			System.out.println("=====================================");
+			return null;
 		}
 		return hr;
 	}
@@ -326,6 +333,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println("=====================================");
 			System.out.println("系统异常：" + ex.getMessage());
 			System.out.println("=====================================");
+			return null;
 		}
 		return hr;
 	}
@@ -364,6 +372,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println("=====================================");
 			System.out.println("系统异常：" + ex.getMessage());
 			System.out.println("=====================================");
+			return null;
 		}
 		return hr;
 	}
@@ -398,6 +407,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			System.out.println("=====================================");
 			System.out.println("系统异常：" + ex.getMessage());
 			System.out.println("=====================================");
+			return null;
 		}
 		return hr;
 	}

@@ -56,13 +56,6 @@ $(function () {
         $(".popup").css("display","none")
     })
 
-    $(".add_sec").click(function () {
-        $(".addsec_popup").css("display","block")
-    })
-
-    $(".add_first").click(function () {
-        $(".addfir_popup").css("display","block")
-    })
 
 
     $(document).on("click",'.choice li',function(){

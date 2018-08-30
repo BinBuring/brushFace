@@ -79,10 +79,6 @@ $(function () {
         $(".popup").css("display","none")
     })
 
-    $(".add").click(function () {
-        $(".all_big").css("display","none")
-        $(".add_big").css("display","block")
-    })
     $(".return").click(function () {
         $(".all_big").css("display","block")
         $(".add_big").css("display","none")

@@ -70,9 +70,12 @@ html,body{
     margin: 13px auto 5px;
 }
 .top .login{
-    width: 260px;
+    width: 300px;
     height: 100%;
-    margin-right: 40px;
+    margin-right: 110px;
+}
+.top .login .tran{
+    color: transparent;
 }
 .top .login p{
     width:auto;
@@ -229,9 +232,9 @@ html,body{
     color: #777;
     width: 85px;
     height: 30px;
-    word-break:keep-all;/* 不换行 */
-    white-space:nowrap;/* 不换行 */
-    overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+    word-break:keep-all;/* 涓嶆崲琛�*/
+    white-space:nowrap;/* 涓嶆崲琛�*/
+    overflow:hidden;/* 鍐呭瓒呭嚭瀹藉害鏃堕殣钘忚秴鍑洪儴鍒嗙殑鍐呭 */
     text-overflow:ellipsis;
 }
 .c_top .information .scInput li:hover{
@@ -351,9 +354,9 @@ html,body{
     font-size: 14px;
     font-weight: normal;
     border: none;
-    word-break:keep-all;/* 不换行 */
-    white-space:nowrap;/* 不换行 */
-    overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+    word-break:keep-all;/* 涓嶆崲琛�*/
+    white-space:nowrap;/* 涓嶆崲琛�*/
+    overflow:hidden;/* 鍐呭瓒呭嚭瀹藉害鏃堕殣钘忚秴鍑洪儴鍒嗙殑鍐呭 */
     text-overflow:ellipsis;
 }
 table{
@@ -362,7 +365,7 @@ table{
     -webkit-border-horizontal-spacing:0;
     -webkit-border-vertical-spacing:0;
     border-color: transparent;
-    table-layout:fixed;/* 只有定义了表格的布局算法为fixed，下面td的定义才能起作用。 */
+    table-layout:fixed;/* 鍙湁瀹氫箟浜嗚〃鏍肩殑甯冨眬绠楁硶涓篺ixed锛屼笅闈d鐨勫畾涔夋墠鑳借捣浣滅敤銆�*/
 }
 .tableitem{
     width: 100%;
@@ -525,9 +528,9 @@ input[type="number"]{
     width: 335px;
     height: 40px;
     line-height: 40px;
-    word-break:keep-all;/* 不换行 */
-    white-space:nowrap;/* 不换行 */
-    overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+    word-break:keep-all;/* 涓嶆崲琛�*/
+    white-space:nowrap;/* 涓嶆崲琛�*/
+    overflow:hidden;/* 鍐呭瓒呭嚭瀹藉害鏃堕殣钘忚秴鍑洪儴鍒嗙殑鍐呭 */
     text-overflow:ellipsis;
 }
 .pc_bottom .pc_ul li:hover{
@@ -775,21 +778,17 @@ input[type="number"]{
 }
 .qr_center .download{
     width: 250px;
-    height: 60px;
-    background: #4cb050;
-    border-radius: 5px;
+    height: 80px;
     margin: 0 auto;
     text-align: center;
     color: #e1f6d7;
 }
 .qr_center .download .p1{
-    font-size: 22px;
-    line-height: 40px;
-}
-.qr_center .download .p2{
-    font-size: 12px;
-}
-.qr_center .download a{
-    text-decoration:none;
-    color:#e1f6d7;
+    width: 250px;
+    height: 30px;
+    border-radius: 5px;
+    background: #4cb050;
+    font-size: 20px;
+    line-height: 30px;
+    margin: 10px 0;
 }

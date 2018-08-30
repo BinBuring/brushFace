@@ -168,8 +168,17 @@
             </div>
             </td>
             <td width="6%">${status.count}</td>
-            <td width="37%">${office.parent.name}</td>
-            <td width="37%">${office.name}</td>
+            <c:choose>
+            	<c:when test="${office.parent.id eq '0'}">
+            		 <td width="37%">${office.name}</td>
+            		 <td width="37%"> </td>
+            	</c:when>
+            	<c:otherwise>
+            		 <td width="37%">${office.parent.name}</td>
+            		 <td width="37%">${office.name}</td>
+            	</c:otherwise>
+            </c:choose>
+           
             <shiro:hasPermission name="sys:office:edit">
 						<td width="14%"><a href="${ctx}/sys/office/form?id=${office.id}">修改</a>
 							<a	href="javascript:;" onclick="delOffice('${office.id}')">删除</a> 

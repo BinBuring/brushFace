@@ -3,8 +3,14 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +38,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.GsonUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.Base64;
 import com.thinkgem.jeesite.common.utils.InterfaceUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
@@ -77,6 +84,26 @@ public class EmpController extends BaseController {
 		return "modules/sys/empIndex";
 	}
 	
+	@RequestMapping(value = "empYQlist")
+	public String empYQlist(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
+		user.setLoginFlag("0");
+		user.setStatus("3");
+		Page<User> page = systemService.findUser(new Page<User>(request, response), user);
+        model.addAttribute("page", page);
+		return "modules/sys/empYQList";
+	}
+	@RequestMapping(value = "empYQform")
+	public String empYQform(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
+		if (user.getCompany()==null || user.getCompany().getId()==null){
+			user.setCompany(UserUtils.getUser().getCompany());
+		}
+		if (user.getOffice()==null || user.getOffice().getId()==null){
+			user.setOffice(UserUtils.getUser().getOffice());
+		}
+		model.addAttribute("user", user);
+		model.addAttribute("allRoles", systemService.findAllRole());
+		return "modules/sys/empYQForm";
+	}
 	@RequestMapping(value = {"list", ""})
 	public String emp(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
 		user.setLoginFlag("0");
@@ -123,6 +150,7 @@ public class EmpController extends BaseController {
 	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "empsave")
 	public String empsave(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes){
+		String yq = request.getParameter("yq");
 		if(Global.isDemoMode()){
 			addMessage(redirectAttributes, "演示模式，不允许操作！");
 			return "redirect:" + adminPath + "/sys/emp/list?repage";
@@ -157,20 +185,22 @@ public class EmpController extends BaseController {
 			if (update.getSuccess().equals("true")) {
 				ResultData photo = new ResultData();
 				//从数据库找到员工数据
-				User bUser = systemService.findUser(user).get(0);
+				User bUser = systemService.getUser2(user.getId());
 				if (update.getSuccess().equals("true")&&StringUtils.isNotEmpty(user.getPhoto())&& !bUser.getPhoto().equals(user.getPhoto())) {//照片是否存在,是否更新，存在的话删除重新上传
 					interfaceService.deletePhoto(user);
 					photo = interfaceService.empimageUrl(user,request);
 					user.setAuthPhone("1");
 				}
-				Map<String, String> dataMap = InterfaceUtils.getStringToMap(photo.getData().toString());
-				user.setPhotoId(dataMap.get("guid"));
+				if (StringUtils.isNotEmpty(photo.getId())) {
+					Map<String, String> dataMap = InterfaceUtils.getStringToMap(photo.getData().toString());
+					user.setPhotoId(dataMap.get("guid"));
+				}
 				systemService.saveUser(user);
 				addMessage(redirectAttributes, "保存员工'" + user.getName() + "'成功");
 			}else {
 				addMessage(redirectAttributes, "保存员工'" + user.getName() + "'失败");
 			}
-		}else {
+		}else {  //添加用户
 			user.setLoginFlag("0");	//设置登陆为不可登陆
 			user.setStatus("0");	  //设置状态为未审核
 			user.setAuthPhone("1");  //设置照片状态为未授权
@@ -180,22 +210,41 @@ public class EmpController extends BaseController {
 				user.setIsNewRecord(true);
 				user.setId(IdGen.uuid());
 				//通过照片url判断是否需要上传照片
-				if (StringUtils.isNotEmpty(user.getPhoto())) {
+				/*if (StringUtils.isNotEmpty(user.getPhoto())) {
 					ResultData photo = interfaceService.empimageUrl(user,request);
 					if (photo!=null) {
 						Map<String, String> dataMap = InterfaceUtils.getStringToMap(photo.getData().toString());
 						user.setPhotoId(dataMap.get("guid"));
 					}
-				}
+				}*/
 				systemService.saveUser(user);
 				addMessage(redirectAttributes, "保存员工'" + user.getName() + "'成功");
 		}
+		if (StringUtils.isNotEmpty(yq) && yq.equals("2")) {
+			//根据有效期判断用户状态
+			long now = new Date().getTime();
+			if (user.getStartDate().getTime() < now && user.getEndDate().getTime() > now) {
+				user.setStatus("1");
+			} else if (user.getStartDate().getTime() > now) {
+				user.setStatus("2");     
+			}else {
+				user.setStatus("3");
+			}
+			systemService.saveUser(user);
+			return "redirect:" + adminPath + "/sys/emp/empYQlist?repage";
+		}
 		return "redirect:" + adminPath + "/sys/emp/list?repage";
 	}
-	
+	/**
+	 * 审核
+	 * @param user
+	 * @param redirectAttributes
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "audit")
 	public String audit(User user,RedirectAttributes redirectAttributes,HttpServletRequest request){
-		if (user.getPhoto()==null) {
+		if (StringUtils.isEmpty(user.getPhoto())) {
 			addMessage(redirectAttributes, "审核员工" + user.getName() + "'失败,该员工头像不符合");
 			return "redirect:" + adminPath + "/sys/emp/list?repage";
 		}
@@ -214,10 +263,10 @@ public class EmpController extends BaseController {
 		}
 		//在云端上保存员工
 		ResultData data = interfaceService.createEmp(user);
-		interfaceService.empimageUrl(user, request);
 		if (data != null && data.getSuccess().equals("true")) {
 			Map<String, String> map = InterfaceUtils.getStringToMap(data.getData().toString());
 			user.setGuid(map.get("guid"));
+			interfaceService.empimageUrl(user, request);
 			systemService.saveUser(user);
 		}
 		addMessage(redirectAttributes, "审核员工" + user.getName() + "'成功");
@@ -359,6 +408,132 @@ public class EmpController extends BaseController {
 		return UserUtils.getUser();
 	}
 	
+	/*上传头像接口*/
+	@RequestMapping(value = "uploadImg")
+	@RequiresPermissions("sys:user:edit")
+	@ResponseBody
+	public Map<String,Object> uploadImg(@RequestParam("myfiles") MultipartFile[] files,
+            HttpServletRequest request,HttpServletResponse response){
+		if(files.length<=0) return null;
+		MultipartFile file = files[0];
+		
+		return saveFile(request, file);
+	}
+	 /***
+     * 保存文件
+    *
+     * @param file
+     * @return
+    * @throws IOException 
+     */
+    private Map<String,Object> saveFile(HttpServletRequest request, MultipartFile file){
+    	
+    	 long filesize = 4000000; //默认上传文件大小，4M
+    	 Map<String,Object> result =  new HashMap<String,Object>();
+    	 String newfilename = "";
+    	 if (file!=null){
+    		 String [] filename = file.getOriginalFilename().split("\\.");
+    		 if(!(filename[1].equals("jpg") || filename[1].equals("png")|| filename[1].equals("jpeg")|| filename[1].equals("JPEG")|| filename[1].equals("JPG")|| filename[1].equals("PNG")||filename[1].equals("bmp"))){
+    			 result.put("state",0);
+    			 result.put("message", "上传失败，文件类型不正确");
+    			 return result;
+             }
+    		 
+    		  if(file.getSize()>filesize){
+    			  result.put("state",0);
+     			 result.put("message", "上传失败，文件大小超出限制");
+     			 return result;
+              }
+    		  
+    		  String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.'));
+    		  
+              newfilename = IdGen.uuid() +suffix;
+              SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+              String year = sdf.format(new Date());
+              sdf = new SimpleDateFormat("MM");
+              String month = sdf.format(new Date());
+              String urlpath = "/brushface/userfiles/1/images/photo/" + year + "/" + month + "/" + newfilename;
+              String filePath = request.getSession().getServletContext()
+                      .getRealPath("/") + "/userfiles/1/images/photo/" + year + "/" + month + "/" + newfilename;
+              File saveDir = new File(filePath);
+              if (!saveDir.getParentFile().exists())
+                  saveDir.getParentFile().mkdirs();
+              
+              try {
+            	  file.transferTo(saveDir);
+			} catch (Exception e) {
+				e.printStackTrace();
+				 result.put("state",0);
+     			 result.put("message", "文件保存失败");
+     			 return result;
+			}
+              result.put("name",newfilename);
+              result.put("url",urlpath);
+              result.put("state",1);
+              result.put("message","ok");
+              
+              return result;
+    	 }
+    	 result.put("state",0);
+		result.put("message", "上传文件不存在");
+		return result;
+    	 
+    	 
+    }
+	/*上传头像接口*/
+	public Map<String,Object> uploadImg(String image,HttpServletRequest request) throws IOException{
+		 Map<String,Object> result =  new HashMap<String,Object>();
+		if(StringUtils.isEmpty(image)) return null;
+		 long filesize = 4000000; //默认上传文件大小，400kb
+		//base64 解码
+        byte[] byteArray = Base64.decode(image);
+        for (byte b : byteArray) {
+            if(b<0)
+                b+=256;
+        }
+        OutputStream out = null;
+        String newfilename = IdGen.uuid() + ".jpg";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+        String year = sdf.format(new Date());
+        sdf = new SimpleDateFormat("MM");
+        String month = sdf.format(new Date());
+        String path = request.getContextPath();
+        String urlpath = path + "/userfiles/1/images/photo/" + year + "/" + month + "/" + newfilename;
+        //String urlpath = "/brushface/userfiles/1/images/photo/" + year + "/" + month + "/" + newfilename;
+        String filePath = request.getSession().getServletContext()
+                .getRealPath("/") + "/userfiles/1/images/photo/" + year + "/" + month + "/" + newfilename;
+        try {
+        	File saveDir = new File(filePath);
+            if (!saveDir.getParentFile().exists())
+                saveDir.getParentFile().mkdirs();
+            
+            out = new FileOutputStream(filePath);
+            out.write(byteArray);
+            System.out.println(saveDir.length());
+            if(saveDir.exists()) {
+            	if(saveDir.length()>filesize) {
+            		 saveDir.delete();
+            		 result.put("state",0);
+        			 result.put("message", "上传失败，文件大小超出限制");
+        			 return result;
+            	}
+            }
+            
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	result.put("state",0);
+			 result.put("message", "上传出错");
+			 return result;
+            
+        }finally {
+       	 out.close();
+		}
+		
+        result.put("state",1);
+		 result.put("message", "ok");
+		 result.put("data", urlpath);
+		 return result;
+	}
 	@RequiresPermissions("user")
 	@ResponseBody
 	@RequestMapping(value = "treeData")
@@ -375,5 +550,4 @@ public class EmpController extends BaseController {
 		}
 		return mapList;
 	}
-    
 }

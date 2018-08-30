@@ -48,10 +48,6 @@ $(function () {
         $(".all_big").css("display","none")
         $(".mod_big").css("display","block")
     });
-    $(".add").click(function () {
-        $(".all_big").css("display","none")
-        $(".add_big").css("display","block")
-    })
     $(".return").click(function () {
         $(".all_big").css("display","block")
         $(".mod_big").css("display","none")

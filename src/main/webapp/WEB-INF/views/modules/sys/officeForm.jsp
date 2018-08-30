@@ -35,7 +35,7 @@
 			}
 			$("#officeView").click(function(){
 		// 正常打开	
-		$.jBox.open("iframe:/brushface/a/tag/treeselect?url="+encodeURIComponent("/sys/office/treeData?type=2")+"&module=&checked=&extId=&isAll=", "选择部门", 300, 420, {
+		$.jBox.open("iframe:/brushface/a/tag/treeselect?url="+encodeURIComponent("/sys/office/treeData?type=1")+"&module=&checked=&extId=&isAll=", "选择部门", 300, 420, {
 			ajaxData:{selectIds: $("#officeId").val()},buttons:{"确定":"ok", "关闭":true}, submit:function(v, h, f){
 				if (v=="ok"){
 					var tree = h.find("iframe")[0].contentWindow.tree;//h.find("iframe").contents();
@@ -97,7 +97,7 @@
 					<div id="first">
 						<label>上级部门：</label>
 						<sys:treeselect id="office" name="parent.id" value="${office.parent.id}" labelName="parent.name" labelValue="${office.parent.name}"
-						title="部门" url="/sys/office/treeData" extId="${office.id}" cssClass="scInput required notView" allowClear="${office.currentUser.admin}"/>
+						title="部门" url="/sys/office/treeData?type=1" extId="${office.id}" cssClass="scInput required notView" allowClear="${office.currentUser.admin}"/>
 						<input type="text" name="" id="officeView" maxlength="16" value="" class="scInput name" placeholder="文字长度为1-20个字符">						
 					</div>
 					<div >

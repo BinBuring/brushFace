@@ -22,9 +22,7 @@
 			.scInput {
 				padding: 0!important;
 			}
-			#messageBox{
-				display: none!important;
-			}
+			
 			.pagination {
 				margin: 8px 0;
 			}
@@ -94,7 +92,7 @@
 				</div>
 				<div class="pc_bottom">
 					<p style="text-align: center"></p>
-					<input type="button" id="query"  class="query fr" value="确定">
+					<input type="button" id="query" class="query fr" value="确定">
 				</div>
 			</div>
 		</div>
@@ -139,46 +137,12 @@
 </div>
  <div class="workcontent all_big">
                <div class="c_top">
-                   <div class="operation fl">
-                       <div class="add">添加</div>
-                       <div class="qr_code">生成二维码</div>
-                       <div class="delete">删除</div>
-                   </div>
                    <form:form id="searchForm" modelAttribute="user" action="${ctx}/sys/emp/emplist" method="post" class="breadcrumb form-search ">
                    	<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 					<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 					<sys:tableSort id="orderBy" name="orderBy" value="${page.orderBy}" callback="page();"/>
-                   <div class="information fr" >
-                       <label>工号：</label>
-									<form:input path="no" htmlEscape="false" maxlength="50" class="scInput" placeholder="请输入工号" />
-									<label>姓名：</label>
-									<form:input path="name" htmlEscape="false" maxlength="50" class="scInput" placeholder="请输入姓名" />
-									<label>审核状态：</label>
-									<form:input path="status" htmlEscape="false" maxlength="50" class="input-medium width" />
-									<ul class="scInput fl choice2">
-										<!--<p>全部</p>
-										<li class="yes">全部</li>
-										<li class="wait_audit">待审核</li>
-										<li>审核通过</li>-->
-									</ul>
-									<label>员工状态：</label>
-									<form:select path="status" class="scInput fl choice2">
-										<form:option value="" label="请选择" />
-										<form:options items="${fns:getDictList('emp_status')}" itemLabel="label" itemValue="value" htmlEscape="false" />
-									</form:select>
-									<label>一级部门：</label>
-									<input id="companyName" name="company.name" readonly="readonly" type="text" value="" data-msg-required="" class="scInput" style="">
-									<input name="company.id" id="companyId" type="hidden" />
-									<label>二级部门：</label>
-									<input name="office.id" id="officeId" type="hidden" />
-									<input id="officeName" name="office.name" readonly="readonly" type="text" value="" data-msg-required="" class="scInput" style="">
-
-									</ul>
-									<input id="btnSubmit" class="query" type="submit" value="查询" onclick="return page();" />
-								</div>
-			</form:form>
-			</div>
-			<sys:message content="${message}"/>
+					</form:form>
+				</div>
 			<div class="c_bottom">
 				<table class="tableList">
 					<tbody>
@@ -206,7 +170,7 @@
                    <div class="result">
                        <table class="tableitem">
                            <tbody id="result">
-                           	<c:forEach items="${page.list}" varStatus="status"   var="user">
+                           	<c:forEach items="${page.list}" varStatus="status"  var="user">
                            <tr>
                                <td width="6%">
                                    <div class="radio i-checks">
@@ -218,29 +182,15 @@
                                <td width="8%">${user.no}</td>
                                <td width="8%">${user.name}</td>
                                <td width="10%">${user.company.name}&nbsp;/&nbsp;${user.office.name}</td>
-                               <td width="15%"><fmt:formatDate value="${user.createDate}" type="both" /></td><%-- dateStyle="full" --%>
+                               <td width="15%"><fmt:formatDate value="${user.createDate}" type="both" dateStyle="full"/></td>
                                <td width="8%">${fns:getDictLabel(user.userType, "sys_user_type", "")}</td>
                                <td width="8%">${fns:getDictLabel(user.status, "emp_status", "")}</td>
-                               <td width="11%" class="blue">
-                               <c:choose>
-                               	<c:when test="${user.photo != null and user.photo != ''}">
-                               		<img style="width: 50px;height: 50px;" src="${user.photo}"/>
-                               	</c:when>
-                               	<c:otherwise>
-	                               <img style="width: 50px;height: 50px;" src="${ctxStatic}/brf/img/moren.jpg"/>
-                               	</c:otherwise>
-                               </c:choose>
-                               </td>
+                               <td width="11%" class="blue"><img style="width: 50px;height: 50px;" src="${user.photo}"/></td>
                                <td width="11%" class="blue">${fns:getDictLabel(user.authPhone, "photo_status", "")}</td>
                                <shiro:hasPermission name="sys:user:edit"><td class="blue">
-				    				<a href="${ctx}/sys/emp/empform?id=${user.id}">修改</a>
-				    				<a href="${ctx}/sys/emp/authorization?id=${user.id}">授权</a>
-				    				<c:if test="${user.status eq '0'}">
-				    					<a href="${ctx}/sys/emp/audit?id=${user.id}">审核</a>
-				    				</c:if>
-									<a href="javascript:;" onclick="delUser('${user.id}')">删除</a>
-									</td>
-								</shiro:hasPermission>
+			    				<a href="${ctx}/sys/emp/empform?id=${user.id}">修改</a>
+								<a href="${ctx}/sys/emp/empYQform?id=${user.id}">延期</a>
+				</td></shiro:hasPermission>
                            </tr>
                            </c:forEach>
                            </tbody></table>
@@ -278,10 +228,6 @@
 			}
 		}
 		
-	    $("#query").click(function () {
-	        $(".popup").css("display","none");
-	        window.location.href = '${ctx}/brf/empRecord/empEWM';
-	    })
 		$(".delete").click(function () {
    			var ids = []
    			$.each($("input[name='check']"), function() {
@@ -305,10 +251,6 @@
    		})	
 		
 		$(function () {
-			if($("#messageBox").text()){
-				$(".pc_bottom p").html($("#messageBox").text())
-                $(".qrcode_popup").css("display","block")
-			}
 			$("#status").remove();
 			 $(".add").click(function () {
         window.location.href = "${ctx}/sys/emp/empform"

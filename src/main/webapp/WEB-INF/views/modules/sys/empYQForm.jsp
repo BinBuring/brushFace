@@ -61,7 +61,7 @@
 	<body>
 		<ul class="nav nav-tabs">
 			<li>
-				<a href="${ctx}/sys/emp/list">员工列表</a>
+				<a href="${ctx}/sys/emp/empYQlist">延期列表</a>
 			</li>
 			<li class="active">
 				<a href="${ctx}/sys/emp/empform?id=${user.id}">员工${not empty user.id?'修改':'添加'}</a>
@@ -69,8 +69,9 @@
 		</ul><br/>
 		<form:form id="inputForm" modelAttribute="user" action="${ctx}/sys/emp/empsave" method="post" class="form-horizontal">
 			<form:hidden path="id" />
-			<div class="big_bottom short">
-				<div>
+			<input type="hidden" name = "yq" id="yq" value="2">
+ 			<div class="big_bottom short">
+<%--				<div>
 					<label>工号：</label>
 					<form:input path="no" htmlEscape="false" maxlength="50" class="required scInput worknum"/>
 					<label>公司：</label>
@@ -96,19 +97,19 @@
 				<div>
 					<label>电话号：</label>
 					<form:input path="phone" htmlEscape="false" maxlength="100" class="scInput phone"/>
+					 --%>
 					
-					
-					<!--<input type="text" maxlength="16" value="" class="scInput starttime" placeholder="请选择">-->
-				</div>
-				<div>
-					<label>有效开始时间：</label>
+				
+<%-- 					</div><label>有效开始时间：</label>
 					<input id="startDate" name="startDate" type="text" readonly="readonly" maxlength="20" class="input-mini Wdate required scInput"
-				value="<fmt:formatDate value="${log.beginDate}" pattern="yyyy-MM-dd"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					<input type="text" maxlength="16" value="" class="scInput starttime" placeholder="请选择">
+				value="<fmt:formatDate value="${log.beginDate}" pattern="yyyy-MM-dd"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/> --%>
+				<div>
 					<label>有效结束时间：</label>
 					<input id="endDate" name="endDate" type="text" readonly="readonly" maxlength="20" class="input-mini Wdate required scInput"
 					value="<fmt:formatDate value="${log.endDate}" pattern="yyyy-MM-dd"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				</div>
-				<div>
+				<%-- <div>
 					<label>备注：</label>
 					<form:textarea path="remarks" htmlEscape="false" rows="3" maxlength="200" class="scInput chang"/>
 				</div>
@@ -124,7 +125,7 @@
 				</div>
 				<div class="right " style="float: right;">
 					
-					<div class="upload" id="up" data="${ctx}/sys/emp/uploadImg" style="cursor:pointer">本地上传
+					<div class="upload" id="up" data="${ctx}/sys/emp/uploadImg">本地上传
 						<form:hidden id="nameImage" path="photo" htmlEscape="false" maxlength="255" class="input-xlarge"/>
 					</div>
 					<p class="tips">
@@ -137,18 +138,19 @@
 						授权成功的设备：Aitu cloud(离线) Aitu cloud(离线)人脸识别（在线）<br>授权中的设备：无
 					</p>
 				</div>
-				<div class="button fl">
-					<shiro:hasPermission name="sys:user:edit"><input id="btnSubmit" class="confirm fl save" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
-					<input type="button" class="return fr" value="返回">
-				</div>
 			</div>
 			</div>
-		</form:form>
 				<!--图片上传框-->
 
 		<form id="imgupload" action="" enctype="multipart/form-data" method="post">
 			<input id="upfile" type="file" name="myfiles" onchange="doupFile();" style="display: none" />
-		</form>
+		</form> --%>
+				<div class="button fl">
+					<shiro:hasPermission name="sys:user:edit"><input id="btnSubmit" class="confirm fl save" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+					<input type="button" class="return fr" value="返回">
+				</div>
+		</div>
+		</form:form>
 		<script>
 			$(function() {
 				$(".fr").click(function () {

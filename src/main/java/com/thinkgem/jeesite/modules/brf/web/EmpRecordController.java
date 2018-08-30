@@ -63,6 +63,10 @@ public class EmpRecordController extends BaseController {
 		return entity;
 	}
 	
+	@RequestMapping(value = "empEWM")
+	public String empEWM() {
+		return "modules/brf/empEWMform";
+	}
 	@RequestMapping(value = {"list", ""})
 	public String list(EmpRecord empRecord, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<EmpRecord> page = empRecordService.findPage(new Page<EmpRecord>(request, response), empRecord); 
@@ -138,7 +142,11 @@ public class EmpRecordController extends BaseController {
         // 文件上传后的路径
        // String path = request.getSession().getServletContext().getRealPath("/");
         String path = request.getContextPath();
-        String filePath = path + "/upload/img/";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+        String year = sdf.format(new Date());
+        sdf = new SimpleDateFormat("MM");
+        String month = sdf.format(new Date());
+        String filePath = path + "/userfiles/1/images/photo/" + year + "/" + month + "/" + fileName;
         user.setPhoto(filePath + fileName);
         user.setIssh("2");
         systemService.saveUser(user);

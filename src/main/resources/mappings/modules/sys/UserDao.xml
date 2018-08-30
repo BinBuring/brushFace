@@ -92,13 +92,13 @@
     	c.name AS "company.name",
     	c.parent_id AS "company.parent.id",
     	c.parent_ids AS "company.parentIds",
+    	o.name AS "office.name",
+    	o.parent_id AS "office.parent.id",
+    	o.parent_ids AS "office.parentIds"<!--,
     	ca.id AS "company.area.id",
     	ca.name AS "company.area.name",
     	ca.parent_id AS "company.area.parent.id",
     	ca.parent_ids AS "company.area.parentIds",
-    	o.name AS "office.name",
-    	o.parent_id AS "office.parent.id",
-    	o.parent_ids AS "office.parentIds",
     	oa.id AS "office.area.id",
     	oa.name AS "office.area.name",
     	oa.parent_id AS "office.area.parent.id",
@@ -110,7 +110,7 @@
     	ou.id AS "office.primaryPerson.id",
     	ou.name AS "office.primaryPerson.name",
     	ou2.id AS "office.deputyPerson.id",
-    	ou2.name AS "office.deputyPerson.name"<!-- ,
+    	ou2.name AS "office.deputyPerson.name" ,
         r.id AS "roleList.id",
         r.office_id AS "roleList.office.id",
         r.name AS "roleList.name",
@@ -121,13 +121,13 @@
     
     <sql id="userJoins">
 		LEFT JOIN sys_office c ON c.id = a.company_id
-		LEFT JOIN sys_area ca ON ca.id = c.area_id
 		LEFT JOIN sys_office o ON o.id = a.office_id
+	<!-- 	LEFT JOIN sys_area ca ON ca.id = c.area_id
 		LEFT JOIN sys_area oa ON oa.id = o.area_id
 		LEFT JOIN sys_user cu ON cu.id = c.primary_person
 		LEFT JOIN sys_user cu2 ON cu2.id = c.deputy_person
 		LEFT JOIN sys_user ou ON ou.id = o.primary_person
-		LEFT JOIN sys_user ou2 ON ou2.id = o.deputy_person<!-- 
+		LEFT JOIN sys_user ou2 ON ou2.id = o.deputy_person
 		LEFT JOIN sys_user_role ur ON ur.user_id = a.id
         LEFT JOIN sys_role r ON r.id = ur.role_id -->
     </sql>
@@ -162,6 +162,10 @@
 		<include refid="userJoins"/><!-- 
 		LEFT JOIN sys_role_office ro ON ro.role_id = r.id -->
 		WHERE a.login_name = #{loginName} AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
+	<select id="findEmp" resultType="User">
+		select 
 	</select>
 	
 	<!-- 分页查询用户信息 -->
@@ -215,7 +219,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.sernum,c.code, o.code, a.name
+				ORDER BY a.create_date desc,c.code, o.code, a.name
 			</otherwise>
 		</choose>
 	</select>

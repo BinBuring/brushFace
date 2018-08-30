@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>欢迎登陆员工人脸注册系统</title>
     <meta name="viewport" content="width=750",user-scalable="no"/>
     <link rel="stylesheet" href="${ctxStatic}/brf/css/login.css">
     <link rel="stylesheet" href="${ctxStatic}/brf/css/upload.css">
@@ -14,6 +14,10 @@
 
 <form id="upload_form" enctype='multipart/form-data'>
 <div class="box">
+	<div class="top">
+        <p>欢迎登录 <br>员工人脸注册后台系统</p>
+    </div>
+    <div class="center_box">
 	<div class="center">
             <div class="input worknum">
                 <label>工号：</label>
@@ -25,7 +29,7 @@
             </div>
             
         </div>
-        
+      </div>  
     <div class="image">
         <img id="ImgPr" src="${ctxStatic}/brf/img/back_03.jpg" alt="">
         <div class="upload"> <input id="upload" type="file"></div>
