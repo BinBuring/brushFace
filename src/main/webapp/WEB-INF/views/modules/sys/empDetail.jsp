@@ -40,7 +40,7 @@
             <input type="text" value="<fmt:formatDate value="${user.endDate}" type="both" />" readonly="readonly" class="scInput effective">
         </div>
     </div>
-    <div class="big_top">
+<%--     <div class="big_top">
         <div class="operation">
             <div>照片</div>
         </div>
@@ -49,13 +49,14 @@
         <div class="left fl">
             <img src="${user.photo}" >
         </div>
-    </div>
+    </div> --%>
     <div class="big_top">
         <div class="operation">
             <div>授权设备</div>
         </div>
     </div>
     <div class="big_bottom">
+    	<c:if test="${list.size() >0 }">
     	<c:forEach items="${list }" var="sub">
         <div>
             <label>设备名称：</label>
@@ -64,6 +65,10 @@
             <input type="text" readonly="readonly" value="${sub.device.aisle }" class="scInput depart">
         </div>
     	</c:forEach>
+    	</c:if>
+    	<c:if test="${list.size() <=0 }">
+    		<p>请审核后授权查看</p>
+    	</c:if>
     </div>
     <div class="big_bottom">
     <p class="fr goback"><a href="javascript:history.go(-1)" >返回</a></p>

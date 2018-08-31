@@ -248,7 +248,9 @@
                                <shiro:hasPermission name="sys:user:edit"><td class="blue" width="14%">
                                		<a href="${ctx}/sys/emp/empDetail?id=${user.id}">查看</a>
 				    				<a href="${ctx}/sys/emp/empform?id=${user.id}">修改</a>
+				    				<c:if test="${!user.status eq '0'}">
 				    				<a href="${ctx}/sys/emp/authorization?id=${user.id}">授权</a>
+				    				</c:if>
 				    				<c:if test="${user.status eq '0'}">
 				    					<a href="${ctx}/sys/emp/audit?id=${user.id}">审核</a>
 				    				</c:if>

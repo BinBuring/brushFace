@@ -21,7 +21,7 @@
 	<div class="center">
             <div class="input worknum">
                 <label>工号：</label>
-                <input type="text" value="" id="no" class="scInput chang" placeholder="请输入工号">
+                <input type="text" value="" id="no" name="no" class="scInput chang" placeholder="请输入工号">
             </div>
             <div class="input department">
                 <label>部门：</label>
@@ -36,7 +36,7 @@
     </div>
     <div class="tips">注：请上传清晰正脸的生活照</div>
     <div class="confirm_upload">确认上传</div>
-    <div class="re_upload">重新上传<input id="re_upload" type="file"></div>
+    <!-- <div class="re_upload">重新上传<input id="re_upload" type="file"></div> -->
     <div class="popup2">
         <div class="pop_center2">
             <div class="pc_top">

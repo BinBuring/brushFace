@@ -25,6 +25,9 @@ public class DeviceService extends CrudService<DeviceDao, Device> {
 	public Device get(String id) {
 		return super.get(id);
 	}
+	public Device getBySeq(String id) {
+		return dao.getBySeq(id);
+	}
 	
 	public List<Device> findList(Device device) {
 		return super.findList(device);

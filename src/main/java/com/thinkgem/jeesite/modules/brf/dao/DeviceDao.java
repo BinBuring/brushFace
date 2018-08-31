@@ -14,5 +14,7 @@ import com.thinkgem.jeesite.modules.brf.entity.Device;
  */
 @MyBatisDao
 public interface DeviceDao extends CrudDao<Device> {
+
+	Device getBySeq(String id);
 	
 }

@@ -9,11 +9,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,13 +32,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.GsonUtils;
+import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.InterfaceUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.brf.entity.DevUser;
+import com.thinkgem.jeesite.modules.brf.entity.Device;
 import com.thinkgem.jeesite.modules.brf.entity.EmpRecord;
+import com.thinkgem.jeesite.modules.brf.service.DevUserService;
+import com.thinkgem.jeesite.modules.brf.service.DeviceService;
 import com.thinkgem.jeesite.modules.brf.service.EmpRecordService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.modules.uuface.entity.ResultData;
+import com.thinkgem.jeesite.modules.uuface.service.InterfaceService;
 
 /**
  * 员工记录Controller
@@ -50,6 +61,12 @@ public class EmpRecordController extends BaseController {
 	private EmpRecordService empRecordService;
 	@Autowired
 	private SystemService systemService;
+	@Autowired
+	private DevUserService devUserService;
+	@Autowired
+	private DeviceService deviceService;
+	@Autowired
+	private InterfaceService interfaceService;
 	
 	@ModelAttribute
 	public EmpRecord get(@RequestParam(required=false) String id) {
@@ -119,17 +136,19 @@ public class EmpRecordController extends BaseController {
 		map.put("success", "true");
 		return GsonUtils.getJsonFromObject(map);
 	}
+	
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 	
 	@ResponseBody
 	//@RequestMapping(value = "upload",method = RequestMethod.POST)
 	@RequestMapping(value = "upload")
-	public String form(MultipartFile file,String type,User user,HttpServletRequest request) {
+	public String form(MultipartFile file,String type,String user,HttpServletRequest request) {
 		String no = request.getParameter("user");
-		user = systemService.getByNo(no);
-		/*String taskType = "F";
+		User us = new User();
+		us = systemService.getByNo(no);
+		String taskType = "F";
         String featureType = type;
-        Long userOpt = user;*/
+        String userOpt = user;
         if (file.isEmpty()) {
             return "上传文件失败,请检查上传的文件";
         }
@@ -140,17 +159,17 @@ public class EmpRecordController extends BaseController {
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         LOG.info("上传的后缀名为：" + suffixName);
         // 文件上传后的路径
-       // String path = request.getSession().getServletContext().getRealPath("/");
-        String path = request.getContextPath();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-        String year = sdf.format(new Date());
-        sdf = new SimpleDateFormat("MM");
-        String month = sdf.format(new Date());
-        String filePath = path + "/userfiles/1/images/photo/" + year + "/" + month + "/" + fileName;
-        user.setPhoto(filePath + fileName);
-        user.setIssh("2");
-        systemService.saveUser(user);
-        File dest = new File(filePath + fileName);
+        String path = request.getSession().getServletContext().getRealPath("/");
+        //String path = request.getContextPath();
+        String filePath = path + "/userfiles/1/images/" + fileName;
+        us.setPhoto(request.getContextPath() + "/userfiles/1/images/"+fileName);
+        us.setIssh("2");
+        us.setAuthPhone("2");
+        us.setStatus("1");
+        systemService.saveUser(us);
+        //interfaceService.createEmp(us);
+        shenHe(us, request);
+        File dest = new File(filePath);
         // 检测是否存在目录
         if (!dest.getParentFile().exists()) {
             dest.getParentFile().mkdirs();
@@ -174,7 +193,31 @@ public class EmpRecordController extends BaseController {
             return "上传文件失败,请检查上传的文件,IOException";
         }
 	}
-
+	public void shenHe(User user,HttpServletRequest request){   //预制用户上传照片后审核，授权
+		ResultData data = interfaceService.createEmp(user);  //如果guid为null，说明云端上没有信息，创建员工
+		Map<String, String> map = InterfaceUtils.getStringToMap(data.getData().toString());
+		user.setGuid(map.get("guid"));
+		systemService.saveUser(user);
+		interfaceService.empimageUrl(user, request);
+		if (StringUtils.isNotEmpty(user.getSqDev())) {  //如果用户已经有了授权设备，直接授权，然后返回
+			String[] devs = user.getSqDev().split(",");
+			for (int i = 0; i < devs.length; i++) { //将授权信息插入到授权表
+				Device dev = deviceService.getBySeq(devs[i]);
+				DevUser devUser = new DevUser();
+				devUser.setUser(user);
+				devUser.setDevId(dev.getId());
+				devUser.setIsNewRecord(true);
+				devUser.setId(IdGen.uuid());
+				List<DevUser> list = devUserService.findList(devUser);  //查询表中数据，看是否插入
+				if (list.size() <= 0) {
+					devUser.setIsNewRecord(true);
+					devUser.setId(IdGen.uuid());
+					devUserService.save(devUser);
+				}
+			}
+			interfaceService.empDev(user, user.getSqDev());
+		}
+	}
 	@RequestMapping(value = "delete")
 	public String delete(EmpRecord empRecord, RedirectAttributes redirectAttributes) {
 		empRecordService.delete(empRecord);

@@ -155,11 +155,6 @@ public class EmpController extends BaseController {
 	 */
 	@RequestMapping(value = "authorization")
 	public String authorization(User user, Model model,RedirectAttributes redirectAttributes,HttpServletRequest request,HttpServletResponse response) {
-		if (StringUtils.isNotEmpty(user.getSqDev())) {  //如果用户已经有了授权设备，直接授权，然后返回
-			interfaceService.empDev(user, user.getSqDev());
-			addMessage(redirectAttributes, "授权成功");
-			return "redirect:" + adminPath + "/sys/emp/list?repage";
-		}
 		model.addAttribute("user", user);
 		Page<Device> page = deviceService.findPage(new Page<Device>(request, response), new Device()); 
 		model.addAttribute("page", page);
@@ -289,15 +284,21 @@ public class EmpController extends BaseController {
 			user.setStatus("3");
 		}
 		//在云端上保存员工
-		ResultData data = interfaceService.createEmp(user);
-		if (data != null && data.getSuccess().equals("true")) {
+		ResultData data = new ResultData();
+		if(StringUtils.isNotEmpty(user.getGuid())){  //如果该用户有guid，说明云端上有此人信息，不能创建，只能更新
+			data = interfaceService.updateEmp(user);
+		}else {
+			data = interfaceService.createEmp(user);  //如果guid为null，说明云端上没有信息，创建员工
 			Map<String, String> map = InterfaceUtils.getStringToMap(data.getData().toString());
 			user.setGuid(map.get("guid"));
+		}
+		if (data != null && data.getSuccess().equals("true")) {
 			ResultData result = interfaceService.empimageUrl(user, request);
 			if (result.getSuccess().equals("true")) {
 				systemService.saveUser(user);
 			}else {
 				addMessage(redirectAttributes, "审核员工" + user.getName() + "'的照片失败,"+result.getMsg()+",请重新上传");
+				user.setStatus("0"); //状态改为未审核
 				user.setPhoto("");
 				systemService.saveUser(user);
 				return "redirect:" + adminPath + "/sys/emp/list?repage";
@@ -461,7 +462,6 @@ public class EmpController extends BaseController {
     * @throws IOException 
      */
     private Map<String,Object> saveFile(HttpServletRequest request, MultipartFile file){
-    	
     	 long filesize = 4000000; //默认上传文件大小，4M
     	 Map<String,Object> result =  new HashMap<String,Object>();
     	 String newfilename = "";
