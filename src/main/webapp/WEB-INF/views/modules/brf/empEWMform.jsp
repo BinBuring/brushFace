@@ -13,8 +13,8 @@
         <div class="qr_center">
             <img class="ewm" id="imgId" src="${ctxStatic}/new-templates/img/erweima.png" alt="">
             <div class="download">
-                <p onclick="downloadIamge('.ewm','erweima.png')" class="p1">下载</p>
-                <p class="p1 fanhui" >返回</p>
+                <p onclick="downloadIamge('.ewm','erweima.png')" style="cursor: pointer;" class="p1">下载</p>
+                <p class="p1 fanhui"><a href="${ctx}/sys/emp/list"  style="color: white;text-decoration:none">返回</a></p>
             </div>
         </div>
     </div>

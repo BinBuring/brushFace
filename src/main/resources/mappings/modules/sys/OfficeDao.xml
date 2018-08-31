@@ -62,6 +62,9 @@
 				<if test="dbName == 'mssql'">'%,'+#{name}+',%')</if>
 				<if test="dbName == 'mysql'">CONCAT('%', #{name}, '%')</if>
 			</if>
+			<if test="parent != null and parent != ''">
+				AND a.parent = #{parent}
+			</if>
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
 		<!-- OR a.id = #{currentUser.office.id} -->

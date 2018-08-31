@@ -67,7 +67,20 @@
 				border-left-width: 0;
 				font-size: 13px;
 			}
-			
+			.pagination ul>li>a:hover{
+			   background-color: #26b2f0;
+			   color:#fff;
+			   cursor: pointer;
+			}
+			.controls a:hover{
+			   background-color: #fff !important;
+			   color:#999 !important;
+			   cursor: default !important;
+			}
+			.active a{
+				background-color: #26b2f0 !important;
+			   color:#fff !important;
+			}
 			.controls a {
 				border: none!important;
 			}
@@ -140,9 +153,9 @@
  <div class="workcontent all_big">
                <div class="c_top">
                    <div class="operation fl">
-                       <div class="add">添加</div>
-                       <div class="qr_code">生成二维码</div>
-                       <div class="delete">删除</div>
+                       <div class="add" style="cursor: pointer;">添加</div>
+                       <div class="qr_code" style="cursor: pointer;">生成二维码</div>
+                       <div class="delete" style="cursor: pointer;">删除</div>
                    </div>
                    <form:form id="searchForm" modelAttribute="user" action="${ctx}/sys/emp/emplist" method="post" class="breadcrumb form-search ">
                    	<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
@@ -153,16 +166,16 @@
 									<form:input path="no" htmlEscape="false" maxlength="50" class="scInput" placeholder="请输入工号" />
 									<label>姓名：</label>
 									<form:input path="name" htmlEscape="false" maxlength="50" class="scInput" placeholder="请输入姓名" />
-									<label>审核状态：</label>
 									<form:input path="status" htmlEscape="false" maxlength="50" class="input-medium width" />
+									<%-- <label>审核状态：</label>
 									<ul class="scInput fl choice2">
 										<!--<p>全部</p>
 										<li class="yes">全部</li>
 										<li class="wait_audit">待审核</li>
 										<li>审核通过</li>-->
-									</ul>
+									</ul> --%>
 									<label>员工状态：</label>
-									<form:select path="status" class="scInput fl choice2">
+									<form:select path="status" class="scInput fl choice2" >
 										<form:option value="" label="请选择" />
 										<form:options items="${fns:getDictList('emp_status')}" itemLabel="label" itemValue="value" htmlEscape="false" />
 									</form:select>
@@ -196,9 +209,9 @@
                            <th width="15%">录入时间</th>
                            <th width="8%">类型</th>
                            <th width="8%" class="state">员工状态</th>
-                           <th width="11%">注册照片</th>
+                           <th width="7%">注册照片</th>
                            <th width="11%">照片授权状态</th>
-                           <th width="10%">操作</th>
+                           <th width="14%">操作</th>
                        </tr>
 
                        </tbody>
@@ -221,7 +234,7 @@
                                <td width="15%"><fmt:formatDate value="${user.createDate}" type="both" /></td><%-- dateStyle="full" --%>
                                <td width="8%">${fns:getDictLabel(user.userType, "sys_user_type", "")}</td>
                                <td width="8%">${fns:getDictLabel(user.status, "emp_status", "")}</td>
-                               <td width="11%" class="blue">
+                               <td width="7%" class="blue">
                                <c:choose>
                                	<c:when test="${user.photo != null and user.photo != ''}">
                                		<img style="width: 50px;height: 50px;" src="${user.photo}"/>
@@ -232,7 +245,8 @@
                                </c:choose>
                                </td>
                                <td width="11%" class="blue">${fns:getDictLabel(user.authPhone, "photo_status", "")}</td>
-                               <shiro:hasPermission name="sys:user:edit"><td class="blue">
+                               <shiro:hasPermission name="sys:user:edit"><td class="blue" width="14%">
+                               		<a href="${ctx}/sys/emp/empDetail?id=${user.id}">查看</a>
 				    				<a href="${ctx}/sys/emp/empform?id=${user.id}">修改</a>
 				    				<a href="${ctx}/sys/emp/authorization?id=${user.id}">授权</a>
 				    				<c:if test="${user.status eq '0'}">
@@ -306,8 +320,9 @@
 		
 		$(function () {
 			if($("#messageBox").text()){
-				$(".pc_bottom p").html($("#messageBox").text())
-                $(".qrcode_popup").css("display","block")
+				$(".pc_bottom p").html($("#messageBox").text());
+                $(".qrcode_popup").css("display","block");
+               // window.location.reload();
 			}
 			$("#status").remove();
 			 $(".add").click(function () {

@@ -145,6 +145,14 @@
      $(function () {
     	$(document).keydown(function(event){
  		    if(event.keyCode ==13){
+ 		    	var insertCode = $("#code").val();
+   			 	if(!insertCode || insertCode.toUpperCase() != code.toUpperCase()){
+   			 		$("#messageBox").show();
+   			 		$("#loginError").text('验证码不正确');
+   			 		$("#drawcode").click();
+   			 		$("#code").val('');
+   			 		return;
+   			 	}
  		    	$("#loginForm").submit()
  		    }
  		});

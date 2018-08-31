@@ -792,3 +792,14 @@ input[type="number"]{
     line-height: 30px;
     margin: 10px 0;
 }
+.goback{
+    width: auto;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #00acef;
+    border: 1px solid #00acef;
+}
+.goback a{
+    text-decoration: none;
+  }

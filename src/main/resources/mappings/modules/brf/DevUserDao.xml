@@ -8,11 +8,14 @@
 		a.dev_id AS "devId",
 		a.create_date AS "createDate",
 		a.create_by AS "createBy.id",
-		u2.name AS "user.name"
+		u2.name AS "user.name",
+		d.name AS "device.name",
+		d.aisle AS "device.aisle"
 	</sql>
 	
 	<sql id="devUserJoins">
 		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+		LEFT JOIN brf_device d ON d.id = a.dev_id
 	</sql>
     
 	<select id="get" resultType="DevUser">

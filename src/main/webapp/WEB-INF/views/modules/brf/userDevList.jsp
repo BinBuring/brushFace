@@ -29,7 +29,7 @@
 			  //复选框全选与反选
 			 $(".chat").click(function () {
 		        var groupCheckbox=$("input[name='check']");
-		       getIds();
+		      	 getIds();
 		       /*  var ids = "";
 			    for(i=0;i<groupCheckbox.length;i++){
 			        if(groupCheckbox[i].checked){
@@ -39,7 +39,6 @@
 			    }
 			    $("#guids").val(ids); */
 		      })
-
 		      //全部选中
 		      $("#all").click(function() { 
 					if (this.checked){  

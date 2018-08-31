@@ -158,7 +158,7 @@ public class SystemService extends BaseService implements InitializingBean {
 			user.preUpdate();
 			userDao.update(user);
 		}
-		if (user.getLoginFlag().equals("0")&&!user.getIssh().equals("2")&&StringUtils.isNotBlank(user.getId())){
+		if (user.getLoginFlag().equals("0")&&StringUtils.isNotEmpty(user.getIssh())&&!user.getIssh().equals("2")&&StringUtils.isNotBlank(user.getId())){
 			// 更新用户与角色关联
 			userDao.deleteUserRole(user);
 			if (user.getRoleList() != null && user.getRoleList().size() > 0){

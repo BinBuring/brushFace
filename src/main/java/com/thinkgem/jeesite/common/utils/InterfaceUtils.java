@@ -265,8 +265,8 @@ public class InterfaceUtils {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < keyArray.length; i++) {
             // 参数值为空，则不参与签名 这个方法trim()是去空格
-            if (map.get(keyArray[i]).trim().length() > 0) {
-                sb.append(keyArray[i]).append("=").append(map.get(keyArray[i]).trim());
+            if (map.get(keyArray[i]).toString().trim().length() > 0) {
+                sb.append(keyArray[i]).append("=").append(map.get(keyArray[i]).toString().trim());
             }
             if(i != keyArray.length-1){
                 sb.append("&");

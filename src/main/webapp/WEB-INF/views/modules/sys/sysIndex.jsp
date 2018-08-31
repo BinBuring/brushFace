@@ -21,31 +21,31 @@
             <img src="${ctxStatic}/new-templates/img/logo.jpg" alt="">
         </div>
         <ul class="nav fl">
-            <li onclick="javascript:window.location.reload()">
+            <li onclick="javascript:window.location.reload()" style="cursor: pointer;">
                 <img src="${ctxStatic}/new-templates/img/icon_1.jpg" alt="">
                 <p>首页</p>
             </li>
-            <li>
+            <li style="cursor: pointer;">
                 <img src="${ctxStatic}/new-templates/img/icon_2.jpg" alt="">
                 <p>监控中心</p>
             </li>
-            <li onclick="chageIfr(this)" data="${ctx}/sys/emp/list">
+            <li onclick="chageIfr(this)" data="${ctx}/sys/emp/list" style="cursor: pointer;">
                 <img src="${ctxStatic}/new-templates/img/icon_3.jpg" alt="">
                 <p>员工管理</p>
             </li>
-            <li onclick="chageIfr(this)" data="${ctx}/sys/user/list">
+            <li onclick="chageIfr(this)" data="${ctx}/sys/user/list" style="cursor: pointer;">
                 <img src="${ctxStatic}/new-templates/img/icon_4.jpg" alt="">
                 <p>用户管理</p>
             </li>
-            <li>
+            <li style="cursor: pointer;">
                 <img src="${ctxStatic}/new-templates/img/icon_5.jpg" alt="">
                 <p>平台设置</p>
             </li>
         </ul>
         <div class="login fr">
-            <p>欢迎 ${fns:getUser().name} 登录</p>
+             <a href="${ctx}/logout" title="退出登录"><p>退出</p></a><p>欢迎 ${fns:getUser().name} 登录</p>
             <a href="javascript:;" data="${ctx}/sys/user/modifyPwd" onclick="chageIfr(this);"><p>修改密码</p></a>
-            <a href="${ctx}/logout" title="退出登录"><p>退出</p></a><p class="tran">退出</p><p class="tran">退出</p><p class="tran">退出</p>
+           <p class="tran">退出</p><p class="tran">退出</p><p class="tran">退出</p>
         </div>
     </div>
     <!--中心-->

@@ -44,7 +44,9 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.brf.entity.DevUser;
 import com.thinkgem.jeesite.modules.brf.entity.Device;
+import com.thinkgem.jeesite.modules.brf.service.DevUserService;
 import com.thinkgem.jeesite.modules.brf.service.DeviceService;
 import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.Role;
@@ -69,6 +71,8 @@ public class EmpController extends BaseController {
 	private InterfaceService interfaceService;
 	@Autowired
 	private DeviceService deviceService;
+	@Autowired
+	private DevUserService devUserService;
 	
 	@ModelAttribute
 	public User get(@RequestParam(required=false) String id) {
@@ -92,6 +96,7 @@ public class EmpController extends BaseController {
         model.addAttribute("page", page);
 		return "modules/sys/empYQList";
 	}
+	
 	@RequestMapping(value = "empYQform")
 	public String empYQform(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
 		if (user.getCompany()==null || user.getCompany().getId()==null){
@@ -123,6 +128,23 @@ public class EmpController extends BaseController {
 		model.addAttribute("allRoles", systemService.findAllRole());
 		return "modules/sys/empForm";
 	}
+	@RequestMapping(value = "empDetail")
+	public String empDetail(User user, Model model) {
+		if (user.getCompany()==null || user.getCompany().getId()==null){
+			user.setCompany(UserUtils.getUser().getCompany());
+		}
+		if (user.getOffice()==null || user.getOffice().getId()==null){
+			user.setOffice(UserUtils.getUser().getOffice());
+		}
+		model.addAttribute("user", user);
+		//查找授权设备
+		DevUser devUser = new DevUser();
+		devUser.setUser(user);
+		List<DevUser> list = devUserService.findList(devUser);
+		model.addAttribute("list", list);
+		return "modules/sys/empDetail";
+	}
+	
 	/**
 	 * 人员授权设备
 	 * @param device
@@ -132,7 +154,12 @@ public class EmpController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "authorization")
-	public String authorization(User user, Model model,HttpServletRequest request,HttpServletResponse response) {
+	public String authorization(User user, Model model,RedirectAttributes redirectAttributes,HttpServletRequest request,HttpServletResponse response) {
+		if (StringUtils.isNotEmpty(user.getSqDev())) {  //如果用户已经有了授权设备，直接授权，然后返回
+			interfaceService.empDev(user, user.getSqDev());
+			addMessage(redirectAttributes, "授权成功");
+			return "redirect:" + adminPath + "/sys/emp/list?repage";
+		}
 		model.addAttribute("user", user);
 		Page<Device> page = deviceService.findPage(new Page<Device>(request, response), new Device()); 
 		model.addAttribute("page", page);
@@ -266,8 +293,15 @@ public class EmpController extends BaseController {
 		if (data != null && data.getSuccess().equals("true")) {
 			Map<String, String> map = InterfaceUtils.getStringToMap(data.getData().toString());
 			user.setGuid(map.get("guid"));
-			interfaceService.empimageUrl(user, request);
-			systemService.saveUser(user);
+			ResultData result = interfaceService.empimageUrl(user, request);
+			if (result.getSuccess().equals("true")) {
+				systemService.saveUser(user);
+			}else {
+				addMessage(redirectAttributes, "审核员工" + user.getName() + "'的照片失败,"+result.getMsg()+",请重新上传");
+				user.setPhoto("");
+				systemService.saveUser(user);
+				return "redirect:" + adminPath + "/sys/emp/list?repage";
+			}
 		}
 		addMessage(redirectAttributes, "审核员工" + user.getName() + "'成功");
 		return "redirect:" + adminPath + "/sys/emp/list?repage";

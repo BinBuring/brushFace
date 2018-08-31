@@ -21,7 +21,18 @@ public class DevUser extends DataEntity<DevUser> {
 	private String devId;		// 设备id
 	private Date beginCreateDate;		// 开始 授权时间
 	private Date endCreateDate;		// 结束 授权时间
+	private Device device;		//查询字段  设备
 	
+	
+	
+	public Device getDevice() {
+		return device;
+	}
+
+	public void setDevice(Device device) {
+		this.device = device;
+	}
+
 	public DevUser() {
 		super();
 	}

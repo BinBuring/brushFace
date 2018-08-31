@@ -103,10 +103,10 @@
 				<div>
 					<label>有效开始时间：</label>
 					<input id="startDate" name="startDate" type="text" readonly="readonly" maxlength="20" class="input-mini Wdate required scInput"
-				value="<fmt:formatDate value="${log.beginDate}" pattern="yyyy-MM-dd"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+				value="<fmt:formatDate value="${user.startDate}" pattern="yyyy-MM-dd"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 					<label>有效结束时间：</label>
 					<input id="endDate" name="endDate" type="text" readonly="readonly" maxlength="20" class="input-mini Wdate required scInput"
-					value="<fmt:formatDate value="${log.endDate}" pattern="yyyy-MM-dd"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					value="<fmt:formatDate value="${user.endDate}" pattern="yyyy-MM-dd"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				</div>
 				<div>
 					<label>备注：</label>
@@ -120,7 +120,12 @@
 			</div>
 			<div class="upload_img">
 				<div class="left fl">
+					<c:if test="${user.photo == null}">
 					<img id="ImgPr" src="${ctxStatic}/new-templates/img/back_03.jpg" alt="">
+					</c:if>
+					<c:if test="${user.photo != null}">
+					<img id="ImgPr" src="${user.photo}" alt="">
+					</c:if>
 				</div>
 				<div class="right " style="float: right;">
 					
@@ -199,7 +204,8 @@
 				
 	$("#officeView").click(function(){
 		// 正常打开	
-		$.jBox.open("iframe:/brushface/a/tag/treeselect?url="+encodeURIComponent("/sys/office/treeData?type=2")+"&module=&checked=&extId=&isAll=", "选择部门", 300, 420, {
+		var pid = $("#companyId").val();
+		$.jBox.open("iframe:/brushface/a/tag/treeselect?url="+encodeURIComponent("/sys/office/treeData?type=2&pid="+pid)+"&module=&checked=&extId=&isAll=", "选择部门", 300, 420, {
 			ajaxData:{selectIds: $("#officeId").val()},buttons:{"确定":"ok", "关闭":true}, submit:function(v, h, f){
 				if (v=="ok"){
 					var tree = h.find("iframe")[0].contentWindow.tree;//h.find("iframe").contents();

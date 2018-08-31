@@ -48,6 +48,8 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	AppService	appService;
 	@Autowired
 	ResultDataService resultDataService;
+	
+	private Map<String, String> maps = new HashMap<String, String>();
 	/**
 	 * 员工删除
 	 * @param device
@@ -57,7 +59,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	public ResultData deleteEmp(User user){
 		UfaceToken token = getToken();
 		App app = getApp();
-		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		maps.put("guid", user.getGuid());//员工id
@@ -87,7 +88,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	public ResultData deleteDev(Device dev){
 		UfaceToken token = getToken();
 		App app = getApp();
-		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		maps.put("deviceKey", dev.getSeq());//设备序列号
@@ -117,7 +117,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	public ResultData deletePhoto(User user){
 		UfaceToken token = getToken();
 		App app = getApp();
-		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		maps.put("guid", user.getPhotoId());//照片id
@@ -140,7 +139,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		return hr;
 	}
 	/**
-	 * 添加员工
+	 * 修改员工
 	 * @param device
 	 * @return
 	 * @throws UnsupportedEncodingException 
@@ -148,7 +147,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	public ResultData updateEmp(User user){
 		UfaceToken token = getToken();
 		App app = getApp();
-		Map<String, String> maps = new HashMap<String, String>();
+		
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		maps.put("guid", user.getGuid());
@@ -187,7 +186,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	public ResultData selectEmp(User user){
 		UfaceToken token = getToken();
 		App app = getApp();
-		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		maps.put("guid", user.getGuid());
@@ -217,18 +215,19 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	public ResultData empimageUrl(User user,HttpServletRequest request){
 		UfaceToken token = getToken();
 		App app = getApp();
-		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		maps.put("guid", user.getGuid());
+		maps.put("useUFaceCloud", "true");
 		//设置照片的路径
 		String path = request.getSession().getServletContext().getRealPath("/");
 		String url = user.getPhoto();
 		url = user.getPhoto().substring(url.indexOf("/")+1, url.length());
 		url = user.getPhoto().substring(url.indexOf("/")+1, url.length()+1);
 		//TODO 我也不知道为什么+1，有机会研究
-		/*url = url.replaceAll("/", "\\\\");
-		url = path.substring(0, path.length()-1)+url;*/
+		/*url = url.replaceAll("/", "\\\\");*/
+		path = path.replaceAll("\\\\", "/");
+		url = path.substring(0, path.length()-1)+url;
 		System.out.println(url);
 		url = getImageBinary(new File(url));
 		//maps.put("imageUrl", "http://124.126.150.115:8080"+user.getPhoto());
@@ -280,7 +279,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	public ResultData empDev(User user,String devGuids){
 		UfaceToken token = getToken();
 		App app = getApp();
-		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		maps.put("guid", user.getGuid());
@@ -313,7 +311,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	public ResultData devEmp(Device device,String personGuids){
 		UfaceToken token = getToken();
 		App app = getApp();
-		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		maps.put("deviceKey", device.getSeq());
@@ -347,7 +344,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		UfaceToken token = getToken();
 		App app = getApp();
 		//String name = new String(user.getName().getBytes("ISO-8859-1"), "UTF-8"); 
-		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		try {
@@ -365,7 +361,7 @@ public class InterfaceService extends CrudService<AppDao, App> {
 			response = InterfaceUtils.post(app.getApiurl()+app.getAppid() + "/person", InterfaceUtils.getMapToString(maps));
 			hr = GsonUtils.getObjectFromJson(response, ResultData.class);
 			System.out.println("=====================================");
-			System.out.println("执行结果：" + response);
+			System.out.println("添加人员成功，执行结果：" + response);
 			System.out.println("=====================================");
 		}
 		catch(Exception ex){
@@ -384,7 +380,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 	public ResultData createDevice(Device device) {
 		UfaceToken token = getToken();
 		App app = getApp();
-		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppid());
 		maps.put("token", token.getToken());
 		maps.put("deviceKey", device.getSeq());
@@ -446,7 +441,6 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		UfaceToken token = new UfaceToken();
 		String timestamp = Long.toString(System.currentTimeMillis());
 		String sign = InterfaceUtils.MD5(app.getAppkey() + timestamp + app.getAppsecret());
-		Map<String, String> maps = new HashMap<String, String>();
 		maps.put("appId", app.getAppkey());
 		maps.put("appKey", app.getAppkey());
 		maps.put("timestamp", timestamp);
