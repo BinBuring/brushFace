@@ -143,7 +143,11 @@ public class EmpRecordController extends BaseController {
 	//@RequestMapping(value = "upload",method = RequestMethod.POST)
 	@RequestMapping(value = "upload")
 	public String form(MultipartFile file,String type,String user,HttpServletRequest request) {
-		
+		System.out.println(file.getSize());
+		long filesize = 400000; //默认上传文件大小，400KB
+		if(file.getSize()>filesize){
+ 			 return "上传失败，文件大小超出限制";
+         }
 		String no = request.getParameter("user");
 		User us = new User();
 		us = systemService.getByNo(no);

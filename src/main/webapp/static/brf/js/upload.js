@@ -74,13 +74,19 @@ $(function () {
 		            uploading = true;
 		        },
 		        success : function(data) {
-		            if (data.code == 1) {
-		                $("#logo").attr("src", data.msg);
+		            alert(data);
+		        	if (data.code == 1) {
+		                $("#logo").attr("src", data);
+		                $(".pc_top").html(data)
 		            } else {
 		                alert(data.msg);
 		            }
 		            uploading = false;
-		    	}});
+		    	},
+		        error : function(data){
+		        	alert(data.responseText);
+		        }
+		    });
 		        
         }else{
             $(".popup2").css("display","none")
