@@ -143,6 +143,7 @@ public class EmpRecordController extends BaseController {
 	//@RequestMapping(value = "upload",method = RequestMethod.POST)
 	@RequestMapping(value = "upload")
 	public String form(MultipartFile file,String type,String user,HttpServletRequest request) {
+		
 		String no = request.getParameter("user");
 		User us = new User();
 		us = systemService.getByNo(no);
@@ -168,7 +169,6 @@ public class EmpRecordController extends BaseController {
         us.setStatus("1");
         systemService.saveUser(us);
         //interfaceService.createEmp(us);
-        shenHe(us, request);
         File dest = new File(filePath);
         // 检测是否存在目录
         if (!dest.getParentFile().exists()) {
@@ -180,6 +180,7 @@ public class EmpRecordController extends BaseController {
             if (res != 0) {
                 return "任务失败！";
             } else {
+            	shenHe(us, request);
             	LOG.error("TaskId插入失败");
                 return "TaskId插入失败,请联系管理员！";
             }

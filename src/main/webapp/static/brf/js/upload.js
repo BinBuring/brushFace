@@ -4,6 +4,7 @@
 $(function () {
     var a=0;
     var b=0;
+    var current = 0;
     //点击图片上传
     $('#upload').change(function(){
         // 获取FileList的第一个元素
@@ -16,7 +17,13 @@ $(function () {
             $(".re_upload").css({"background":"#2a69b6","color":"#fff"})
         }
     })
-
+  $(".angle").click(function(){
+        if(b==1){
+            current = (current+90)%360;
+            $("#ImgPr").css("transform","rotate("+current+"deg)");
+            console.log($("#ImgPr").css("transform"));
+        }
+    })
     //重新上传
     $('#re_upload').change(function(){
         // 获取FileList的第一个元素

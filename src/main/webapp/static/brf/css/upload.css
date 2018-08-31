@@ -167,7 +167,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     color: #2a69b6;
     margin: 0 auto 100px;
 }
-.confirm_upload,.re_upload{
+.confirm_upload,.re_upload,.angle{
     width: 535px;
     height: 90px;
     background: #2a69b6;
@@ -178,6 +178,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     font-size: 28px;
     margin:30px auto 0;
 }
+
 .re_upload{
     background: #e0e1e5;
     color: #98999b;

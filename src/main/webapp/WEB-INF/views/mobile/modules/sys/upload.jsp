@@ -35,6 +35,7 @@
         <div class="upload"> <input id="upload" type="file"></div>
     </div>
     <div class="tips">注：请上传清晰正脸的生活照</div>
+      <div class="angle">调整角度</div>
     <div class="confirm_upload">确认上传</div>
     <!-- <div class="re_upload">重新上传<input id="re_upload" type="file"></div> -->
     <div class="popup2">
