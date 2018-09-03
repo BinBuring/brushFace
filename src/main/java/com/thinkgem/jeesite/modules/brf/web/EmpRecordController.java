@@ -143,8 +143,7 @@ public class EmpRecordController extends BaseController {
 	//@RequestMapping(value = "upload",method = RequestMethod.POST)
 	@RequestMapping(value = "upload")
 	public String form(MultipartFile file,String type,String user,HttpServletRequest request) {
-		System.out.println(file.getSize());
-		long filesize = 400000; //默认上传文件大小，400KB
+		long filesize = 300000; //默认上传文件大小，400KB
 		if(file.getSize()>filesize){
  			 return "上传失败，文件大小超出限制";
          }
@@ -182,11 +181,14 @@ public class EmpRecordController extends BaseController {
             file.transferTo(dest);
             Long res = 0L;
             if (res != 0) {
-                return "任务失败！";
+                return "上传成功！";
             } else {
-            	shenHe(us, request);
-            	LOG.error("TaskId插入失败");
-                return "TaskId插入失败,请联系管理员！";
+            	ResultData data=shenHe(us, request);
+            	if(data.getSuccess().equals("false")){
+            		return data.getMsg();
+            	}
+            	//LOG.error("TaskId插入失败");
+                return "上传成功";
             }
         } catch (IllegalStateException e) {
             e.printStackTrace();
@@ -198,12 +200,28 @@ public class EmpRecordController extends BaseController {
             return "上传文件失败,请检查上传的文件,IOException";
         }
 	}
-	public void shenHe(User user,HttpServletRequest request){   //预制用户上传照片后审核，授权
-		ResultData data = interfaceService.createEmp(user);  //如果guid为null，说明云端上没有信息，创建员工
+	/**
+	 * 一步录入，上传照片，授权
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public ResultData shenHe(User user,HttpServletRequest request){   //预制用户上传照片后审核，授权
+		user.setName(user.getName().trim());
+		ResultData data = new ResultData();
+		if (StringUtils.isNotEmpty(user.getGuid())) {
+			data = interfaceService.updateEmp(user); 
+		} else {
+			data = interfaceService.createEmp(user);  //如果guid为null，说明云端上没有信息，创建员工
+		}
 		Map<String, String> map = InterfaceUtils.getStringToMap(data.getData().toString());
 		user.setGuid(map.get("guid"));
 		systemService.saveUser(user);
-		interfaceService.empimageUrl(user, request);
+		data = interfaceService.empimageUrl(user, request);
+		System.out.println(data.getMsg());
+		if(data.getSuccess().equals("false")){
+			return data;
+		}
 		if (StringUtils.isNotEmpty(user.getSqDev())) {  //如果用户已经有了授权设备，直接授权，然后返回
 			String[] devs = user.getSqDev().split(",");
 			for (int i = 0; i < devs.length; i++) { //将授权信息插入到授权表
@@ -220,8 +238,9 @@ public class EmpRecordController extends BaseController {
 					devUserService.save(devUser);
 				}
 			}
-			interfaceService.empDev(user, user.getSqDev());
+			data = interfaceService.empDev(user, user.getSqDev());
 		}
+		return data;
 	}
 	@RequestMapping(value = "delete")
 	public String delete(EmpRecord empRecord, RedirectAttributes redirectAttributes) {

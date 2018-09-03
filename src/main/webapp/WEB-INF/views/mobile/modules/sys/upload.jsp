@@ -50,12 +50,12 @@
             </div>
         </div>
     </div>
-    <div class="popup">
+   <!--  <div class="popup">
         <div class="pop_center">
             <div class="pc_top">上传成功，管理员正在审核中</div>
             <div class="pc_bottom yes">确定</div>
         </div>
-    </div>
+    </div> -->
 
 
 </div>

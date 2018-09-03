@@ -158,10 +158,10 @@ public class InterfaceService extends CrudService<AppDao, App> {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		maps.put("idNo", user.getIdCard());
+		/*maps.put("idNo", user.getIdCard());
 		maps.put("phone", user.getPhone());
 		maps.put("tag", user.getRemarks());
-		maps.put("type", user.getUserType());
+		maps.put("type", user.getUserType());*/
 		String response = null;
 		ResultData hr = new ResultData();
 		try {
