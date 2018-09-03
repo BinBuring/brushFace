@@ -116,8 +116,8 @@
                 <div class="pagination">${page}</div>
         </div>
         <form:form id="inputForm" modelAttribute="device" action="${ctx}/brf/devUser/saveDev" method="post" class="form-horizontal">
-        <input type="hidden" value="${user.id}" name = "userId" >
-		<input type="hidden" value="" id="devids" name = "devids">
+        <input type="text" value="${user.id}" name = "userId" >
+		<input type="text" value="" id="devids" name = "devids">
         <div class="button">
             <input type="submit" class="confirm fl" value="授权">
             <input type="button" class="return fr" value="返回" onclick="history.go(-1)">

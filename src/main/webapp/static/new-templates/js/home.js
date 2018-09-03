@@ -195,10 +195,6 @@ $(function () {
         $(".aut_big").css("display","block")
     });
 
-    $(".qr_code").click(function () {
-        $(".pc_bottom p").html("请确认，是否生成二维码")
-        $("#qrcode_popup").css("display","block")
-    })
 
     $(".save").click(function () {
         $(".pc_bottom p").html("对不起，未检测到人脸请重新上传")

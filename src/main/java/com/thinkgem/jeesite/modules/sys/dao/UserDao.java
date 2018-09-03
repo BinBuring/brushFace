@@ -74,4 +74,6 @@ public interface UserDao extends CrudDao<User> {
 
 	public User getByNo(String no);
 
+	public User getUserByGuid(String guid);
+
 }

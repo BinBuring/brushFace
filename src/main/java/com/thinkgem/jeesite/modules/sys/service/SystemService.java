@@ -87,6 +87,14 @@ public class SystemService extends BaseService implements InitializingBean {
 		return userDao.get(id);
 	}
 	/**
+	 * 获取用户
+	 * @param id
+	 * @return
+	 */
+	public User getUserByGuid(String guid) {
+		return userDao.getUserByGuid(guid);
+	}
+	/**
 	 * 根据登录名获取用户
 	 * @param loginName
 	 * @return
@@ -157,6 +165,15 @@ public class SystemService extends BaseService implements InitializingBean {
 			// 更新用户数据
 			user.preUpdate();
 			userDao.update(user);
+		}
+		if (user.getLoginFlag().equals("1")) {
+			// 更新用户与角色关联
+						userDao.deleteUserRole(user);
+						if (user.getRoleList() != null && user.getRoleList().size() > 0){
+							userDao.insertUserRole(user);
+						}else{
+							throw new ServiceException(user.getLoginName() + "没有设置角色！");
+						}
 		}
 		if (user.getLoginFlag().equals("0")&&StringUtils.isNotEmpty(user.getIssh())&&!user.getIssh().equals("2")&&StringUtils.isNotBlank(user.getId())){
 			// 更新用户与角色关联

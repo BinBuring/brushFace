@@ -115,7 +115,7 @@ public class UserController extends BaseController {
 		if (!beanValidator(model, user)){
 			return form(user, model);
 		}
-		if (!"true".equals(checkLoginName(user.getOldLoginName(), user.getLoginName()))){
+		if (StringUtils.isEmpty(user.getId())&&!"true".equals(checkLoginName(user.getOldLoginName(), user.getLoginName()))){
 			addMessage(model, "保存用户'" + user.getLoginName() + "'失败，登录名已存在");
 			return form(user, model);
 		}

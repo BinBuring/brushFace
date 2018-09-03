@@ -747,9 +747,42 @@ input[type="number"]{
     height: 85px;
     margin: 10px auto 0;
 }
+.pop_center{
+    width: 430px;
+    height: 450px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom:0;
+    right: 0;
+    margin: auto;
+}
+.pc_bottom img{
+    display: block;
+    width: 250px;
+    height: 250px;
+    margin: 35px auto 30px;
+}
+.pc_bottom .download{
+    width: 250px;
+    height: 80px;
+    margin: 0 auto;
+    text-align: center;
+    color: #e1f6d7;
+}
+.pc_bottom .download .p1{
+    width: 250px;
+    height: 30px;
+    border-radius: 5px;
+    background: #4cb050;
+    font-size: 20px;
+    line-height: 30px;
+    margin: 10px 0;
+}
 
-
-.qr_box{
+/* .qr_box{
     width: 100%;
     height: 100%;
     position: fixed;
@@ -791,7 +824,7 @@ input[type="number"]{
     font-size: 20px;
     line-height: 30px;
     margin: 10px 0;
-}
+} */
 .goback{
     width: auto;
     padding: 8px 12px;

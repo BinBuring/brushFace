@@ -143,7 +143,7 @@
 		LEFT JOIN sys_role_office ro ON ro.role_id = r.id -->
 		WHERE a.id = #{id}
 	</select>
-		<!-- 根据编号获得用户 -->
+		<!-- 根据工号获得用户 -->
 	<select id="getByNo" resultType="User">
 		SELECT
 			<include refid="userColumns"/><!-- ,
@@ -152,6 +152,14 @@
 		<include refid="userJoins"/><!-- 
 		LEFT JOIN sys_role_office ro ON ro.role_id = r.id -->
 		WHERE a.no = #{no}
+	</select>
+			<!-- 根据工号获得用户 -->
+	<select id="getUserByGuid" resultType="User">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		<include refid="userJoins"/>
+		WHERE a.guid = #{guid}
 	</select>
 	
 	<!-- 根据登录名查询用户 -->
@@ -163,10 +171,6 @@
 		<include refid="userJoins"/><!-- 
 		LEFT JOIN sys_role_office ro ON ro.role_id = r.id -->
 		WHERE a.login_name = #{loginName} AND a.del_flag = #{DEL_FLAG_NORMAL}
-	</select>
-	
-	<select id="findEmp" resultType="User">
-		select 
 	</select>
 	
 	<!-- 分页查询用户信息 -->
@@ -190,6 +194,9 @@
 					<if test="dbName == 'oracle'">'%,'||#{office.id}||',%')</if>
 					<if test="dbName == 'mssql'">'%,'+#{office.id}+',%')</if>
 					<if test="dbName == 'mysql'">CONCAT('%,', #{office.id}, ',%'))</if>
+		</if>
+		<if test="no != null  and no != ''">
+			AND a.no = #{no}
 		</if>
 		<!-- 如果不是超级管理员，则不显示超级管理员用户 -->
 		<if test="!currentUser.admin">
@@ -325,6 +332,8 @@
 			email = #{email}, 
 			phone = #{phone}, 
 			mobile = #{mobile}, 
+			start_date = #{startDate},
+			end_date = #{endDate},
 			user_type = #{userType}, 
 			update_by = #{updateBy.id}, 
 			update_date = #{updateDate}, 

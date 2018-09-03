@@ -16,6 +16,14 @@
 	<sql id="deviceJoins">
 	</sql>
     
+   	<select id="get" resultType="Device">
+		SELECT 
+			<include refid="deviceColumns"/>
+		FROM brf_device a
+		<include refid="deviceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+    
 	<select id="getBySeq" resultType="Device">
 		SELECT 
 			<include refid="deviceColumns"/>

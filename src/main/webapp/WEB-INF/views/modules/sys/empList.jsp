@@ -99,19 +99,21 @@
 	<body>
 		<!--提示-->
 		<div class="tishi"></div>
-		<div class="popup" id="qrcode_popup">
-			<div class="pop_center">
-				<div class="pc_top">
-					<span class="fl">提示</span>
-					<span class="fr close"><img src="${ctxStatic}/new-templates/img/close.png" alt=""></span>
-				</div>
-				<div class="pc_bottom">
-					<p style="text-align: center"></p>
-					<input type="button" id="query"  class="query fr" value="确定">
+	<div class="popup" id="qrcode_popup">
+		<div class="pop_center">
+			<div class="pc_top">
+				<span class="fl">二维码</span> <span class="fr close"><img
+					src="${ctxStatic}/new-templates/img/close.png" alt=""></span>
+			</div>
+			<div class="pc_bottom">
+				<img class="ewm" id="imgId" src="${ctxStatic}/new-templates/img/erweima.png" alt="">
+				<div class="download">
+					<p onclick="downloadIamge('.ewm','erweima.png')" style="cursor: pointer;" class="p1">下载</p>
 				</div>
 			</div>
 		</div>
-		<div class="qrcode_popup popup">
+	</div>
+	<div class="qrcode_popup popup">
 			<div class="pop_center">
 				<div class="pc_top">
 					<span class="fl">提示</span>
@@ -248,12 +250,14 @@
                                <shiro:hasPermission name="sys:user:edit"><td class="blue" width="14%">
                                		<a href="${ctx}/sys/emp/empDetail?id=${user.id}">查看</a>
 				    				<a href="${ctx}/sys/emp/empform?id=${user.id}">修改</a>
-				    				<c:if test="${!user.status eq '0'}">
-				    				<a href="${ctx}/sys/emp/authorization?id=${user.id}">授权</a>
-				    				</c:if>
-				    				<c:if test="${user.status eq '0'}">
+				    				<c:choose>
+				    				<c:when test="${user.status eq '0'}">
 				    					<a href="${ctx}/sys/emp/audit?id=${user.id}">审核</a>
-				    				</c:if>
+				    				</c:when>
+				    				<c:otherwise>
+				    					<a href="${ctx}/sys/emp/authorization?id=${user.id}">授权</a>
+				    				</c:otherwise>
+				    				</c:choose>
 									<a href="javascript:;" onclick="delUser('${user.id}')">删除</a>
 									</td>
 								</shiro:hasPermission>
@@ -287,13 +291,29 @@
 
 </body>
 	<script>
+	function downloadIamge(selector, name) {  
+	    // 通过选择器获取img元素，  
+	    var img = document.querySelector(selector)  
+	    // 将图片的src属性作为URL地址  
+	    var url = img.src  
+	    var a = document.createElement('a')  
+	    var event = new MouseEvent('click')  
+	      
+	    a.download = name || '下载图片名称'  
+	    a.href = url  
+	      
+	    a.dispatchEvent(event)  
+	}
 		function delUser (id) {
 			if(confirm('确认删除该用户吗？')){
 				$.getJSON('${ctx}/sys/emp/empdelete?id=' + id)
 				window.location.reload();
 			}
 		}
-		
+		var ctxstatic = '${ctxStatic}';
+	    $(".qr_code").click(function () {
+	        $("#qrcode_popup").css("display","block")
+	    })
 	    $("#query").click(function () {
 	        $(".popup").css("display","none");
 	        window.location.href = '${ctx}/brf/empRecord/empEWM';

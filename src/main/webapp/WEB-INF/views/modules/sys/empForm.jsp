@@ -38,6 +38,16 @@
 					rules: {
 						loginName: {
 							remote: "${ctx}/sys/user/checkLoginName?oldLoginName=" + encodeURIComponent('${user.loginName}')
+						},
+						name:{
+							remote: {                               
+					            url: "${ctx}/sys/emp/checkName?name"+name,//验证地址,这里用的是servlet可以用jsp或者php  
+					            type:'POST',//大写  
+					            dataType:'json',  
+					            data:{ username:function(){  
+					                return $('#name').val();  
+					                },
+					            
 						}
 					},
 					submitHandler: function(form) {
@@ -73,13 +83,13 @@
 				<div>
 					<label>工号：</label>
 					<form:input path="no" htmlEscape="false" maxlength="50" class="required scInput worknum"/>
-					<label>公司：</label>
+					<label>一级部门：</label>
 					<sys:treeselect id="company" name="company.id" value="${user.company.id}" labelName="company.name" labelValue="${user.company.name}" title="公司" url="/sys/office/treeData?type=1" cssClass="scInput required notView" />
 					<input type="text" name="" id="companyView" maxlength="16" value="" class="scInput name" placeholder="文字长度为1-20个字符">
 				</div>
 				<div>
-					<label>部门：</label>
-					 <sys:treeselect id="office" name="office.id" value="${user.office.id}" labelName="office.name" labelValue="${user.office.name}" title="部门" url="/sys/office/treeData?type=2" cssClass="scInput required notView" notAllowSelectParent="true"/>
+					<label>二级部门：</label>
+					<sys:treeselect id="office" name="office.id" value="${user.office.id}" labelName="office.name" labelValue="${user.office.name}" title="部门" url="/sys/office/treeData?type=2" cssClass="scInput required notView" notAllowSelectParent="true"/>
 					<input type="text" name="" id="officeView" maxlength="16" value="" class="scInput name" placeholder="文字长度为1-20个字符">
 					<label>员工类型：</label>
 					<form:select path="userType" class="input-xlarge scInput">

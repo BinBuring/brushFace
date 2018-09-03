@@ -112,7 +112,7 @@ public class EmpRecordController extends BaseController {
 		String idCardInfo = request.getParameter("idCardInfo");
 		String devKey = request.getParameter("deviceKey");
 		//设置实体属性
-		empRecord.setEmp(UserUtils.get(personGuid));
+		empRecord.setEmp(systemService.getUserByGuid(personGuid));
 		empRecord.setPhotourl(photoUrl);
 		empRecord.setData(data);
 		empRecord.setType(type);
@@ -207,21 +207,28 @@ public class EmpRecordController extends BaseController {
 	 * @return
 	 */
 	public ResultData shenHe(User user,HttpServletRequest request){   //预制用户上传照片后审核，授权
-		user.setName(user.getName().trim());
-		ResultData data = new ResultData();
-		if (StringUtils.isNotEmpty(user.getGuid())) {
-			data = interfaceService.updateEmp(user); 
-		} else {
-			data = interfaceService.createEmp(user);  //如果guid为null，说明云端上没有信息，创建员工
-		}
-		Map<String, String> map = InterfaceUtils.getStringToMap(data.getData().toString());
-		user.setGuid(map.get("guid"));
-		systemService.saveUser(user);
-		data = interfaceService.empimageUrl(user, request);
-		System.out.println(data.getMsg());
-		if(data.getSuccess().equals("false")){
-			return data;
-		}
+	    user.setName(user.getName().trim());
+	    ResultData data = new ResultData();
+	    if (StringUtils.isNotEmpty(user.getGuid())) {
+	      data = interfaceService.updateEmp(user);
+	      if (StringUtils.isNoneEmpty(user.getPhotoId())) {
+	        interfaceService.deletePhoto(user);
+	      }
+	      }else{
+	      data = this.interfaceService.createEmp(user);
+	      Map<String, String> map = InterfaceUtils.getStringToMap(data.getData().toString());
+	      user.setGuid((String)map.get("guid"));
+	      systemService.saveUser(user);
+	    }
+	    data = interfaceService.empimageUrl(user, request);
+	    System.out.println(data.getMsg());
+	    if (data.getSuccess().equals("false")){
+	      user.setPhoto("");
+	      systemService.saveUser(user);
+	      return data;
+	    }
+	    user.setPhotoId((String)InterfaceUtils.getStringToMap(data.getData().toString()).get("guid"));
+	    this.systemService.saveUser(user);
 		if (StringUtils.isNotEmpty(user.getSqDev())) {  //如果用户已经有了授权设备，直接授权，然后返回
 			String[] devs = user.getSqDev().split(",");
 			for (int i = 0; i < devs.length; i++) { //将授权信息插入到授权表

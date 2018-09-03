@@ -41,7 +41,7 @@
             <div class="delete">删除</div>-->
         </div>
         <div class="information fr">
-            <label>操作员ID：</label>
+            <%-- <label>操作员ID：</label>
             <input id="createBy.id" name="createBy.id" type="text" maxlength="50" class="scInput chang" value="${log.createBy.id}"  placeholder="请输入操作员ID"/>
             <label>操作类型：</label>
             <!--<input type="text" maxlength="16" value="" class="scInput" placeholder="全部">-->
@@ -53,7 +53,7 @@
                 <li>删除员工</li>
             </ul>
             <label>操作内容：</label>
-            <input id="title" name="title" type="text" maxlength="50"  value="${log.title}" class="scInput chang" placeholder="请输入操作内容"/>
+            <input id="title" name="title" type="text" maxlength="50"  value="${log.title}" class="scInput chang" placeholder="请输入操作内容"/> --%>
             <label>开始时间：</label>
             <input id="beginDate" name="beginDate" type="text" readonly="readonly" maxlength="20" class="scInput chang"
 				value="<fmt:formatDate value="${log.beginDate}" pattern="yyyy-MM-dd"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>

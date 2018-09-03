@@ -57,16 +57,17 @@
 				</div>
 			</div>
 			<form:form id="inputForm" modelAttribute="user" action="${ctx}/sys/user/save" method="post" class="form-horizontal">
+			<form:hidden path="id" />
 				<div class="big_bottom">
 					<div >
 						<label>账号：</label>
-						<input id="oldLoginName" name="oldLoginName" type="hidden" value="${user.loginName}">
-						<form:input path="loginName" htmlEscape="false" maxlength="50" class="scInput chang" placeholder="请输入用户登录名" />
+						<%-- <input id="oldLoginName" name="oldLoginName" type="hidden" value="${user.loginName}"> --%>
+						<form:input path="loginName" htmlEscape="false" maxlength="50" class="scInput chang" placeholder="请输入用户账号" />
 					</div>
 					<div >
 						<label>姓名：</label>
-						<input id="name" name="name" type="hidden" value="${user.name}">
-						<form:input path="name" htmlEscape="false" maxlength="50" class="scInput chang" placeholder="请输入用户登录名" />
+						<%-- <input id="name" name="name" type="hidden" value="${user.name}"> --%>
+						<form:input path="name" htmlEscape="false" maxlength="50" class="scInput chang" placeholder="请输入用户姓名" />
 					</div>
 					<div id="type">
 						<label>用户类型：</label>

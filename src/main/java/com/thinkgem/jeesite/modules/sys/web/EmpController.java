@@ -144,7 +144,22 @@ public class EmpController extends BaseController {
 		model.addAttribute("list", list);
 		return "modules/sys/empDetail";
 	}
-	
+	/**
+	 * 验证名字是否有效
+	 * @param oldLoginName
+	 * @param loginName
+	 * @return
+	 */
+	@ResponseBody
+	@RequiresPermissions("sys:user:edit")
+	@RequestMapping(value = "checkName")
+	public String checkName(String name) {
+		User user = new User();
+		user.setName(name);
+		List<User> list = systemService.findUser(user);
+		System.out.println(list.size());
+		return "false";
+	}
 	/**
 	 * 人员授权设备
 	 * @param device
