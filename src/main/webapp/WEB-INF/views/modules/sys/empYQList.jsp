@@ -188,7 +188,7 @@
                                <td width="11%" class="blue"><img style="width: 50px;height: 50px;" src="${user.photo}"/></td>
                                <td width="11%" class="blue">${fns:getDictLabel(user.authPhone, "photo_status", "")}</td>
                                <shiro:hasPermission name="sys:user:edit"><td class="blue">
-			    				<a href="${ctx}/sys/emp/empform?id=${user.id}">修改</a>
+			    				<%-- <a href="${ctx}/sys/emp/empform?id=${user.id}">修改</a> --%>
 								<a href="${ctx}/sys/emp/empYQform?id=${user.id}">延期</a>
 				</td></shiro:hasPermission>
                            </tr>

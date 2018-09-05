@@ -90,9 +90,7 @@
             	<c:forEach items="${page.list}" var="empRecord" varStatus="status">
             <tr>
            <th width="10%">${status.count}</th>
-           <th width="10%"><a href="${ctx}/brf/empRecord/form?id=${empRecord.id}">
-					${empRecord.emp.no}
-				</a></th>
+           <th width="10%">${empRecord.emp.no}</th>
            <th width="12%">${empRecord.emp.name}</th>
            <th width="11%">${empRecord.offName}</th>
            <th width="15%"><img src="${empRecord.photourl}" style="width: 50px;height: 50px;"></th>

@@ -9,6 +9,13 @@
 		<meta name="decorator" content="default" />
 
 		<style>
+			.rename{
+			    line-height: 40px;
+			    color: #f00;
+			    font-size: 12px;
+			    text-indent: 10px;
+			    display: none;
+			}
 			.scInput {
 				padding: 0!important;
 			}
@@ -39,16 +46,6 @@
 						loginName: {
 							remote: "${ctx}/sys/user/checkLoginName?oldLoginName=" + encodeURIComponent('${user.loginName}')
 						},
-						name:{
-							remote: {                               
-					            url: "${ctx}/sys/emp/checkName?name"+name,//验证地址,这里用的是servlet可以用jsp或者php  
-					            type:'POST',//大写  
-					            dataType:'json',  
-					            data:{ username:function(){  
-					                return $('#name').val();  
-					                },
-					            
-						}
 					},
 					submitHandler: function(form) {
 						loading('正在提交，请稍等...');
@@ -100,14 +97,13 @@
 				<div>
 					<label>姓名：</label>
 					<form:input path="name" htmlEscape="false" maxlength="50" class="required scInput name"/>
-					<label>身份证号：</label>
-					<form:input path="idCard" htmlEscape="false" maxlength="100" class="scInput idnum"/>
+					 <p class="rename">该用户名已经存在</p>
 				</div>
 				<div>
 					<label>电话号：</label>
 					<form:input path="phone" htmlEscape="false" maxlength="100" class="scInput phone"/>
-					
-					
+					<label>身份证号：</label>
+					<form:input path="idCard" htmlEscape="false" maxlength="100" class="scInput idnum"/>
 					<!--<input type="text" maxlength="16" value="" class="scInput starttime" placeholder="请选择">-->
 				</div>
 				<div>
@@ -169,83 +165,189 @@
 				$(".fr").click(function () {
 					window.location.href ="${ctx}/sys/emp/list"
 				})
-				$("#companyView").val($("#companyName").val())
-				$("#officeView").val($("#officeName").val())
-				$("#companyView").click(function() {
-					$.jBox.open("iframe:/brushface/a/tag/treeselect?url=" + encodeURIComponent("/sys/office/treeData?type=1") + "&module=&checked=&extId=&isAll=", "选择公司", 300, 420, {
-						ajaxData: {
-							selectIds: $("#companyGetId").val()
-						},
-						buttons: {
-							"确定": "ok",
-							"关闭": true
-						},
-						submit: function(v, h, f) {
-							if(v == "ok") {
-								var tree = h.find("iframe")[0].contentWindow.tree; //h.find("iframe").contents();
-								var ids = [],
-									names = [],
-									nodes = [];
-								if("" == "true") {
-									nodes = tree.getCheckedNodes(true);
-								} else {
-									nodes = tree.getSelectedNodes();
-								}
-								for(var i = 0; i < nodes.length; i++) { //
-									ids.push(nodes[i].id);
-									names.push(nodes[i].name); //
-									break; // 如果为非复选框选择，则返回第一个选择  
-								}
-								$("#companyId").val(ids.join(",").replace(/u_/ig, ""));
-								$("#companyName").val(names.join(","));
-								$("#companyView").val($("#companyName").val())
-							} //
-							if(typeof companyGetTreeselectCallBack == 'function') {
-								companyGetTreeselectCallBack(v, h, f);
+				$(".name").blur(function () {
+					var name = $(this).val();
+			$.ajax({
+						url : "${ctx}/sys/emp/checkName",
+						data : {name:name},
+						success : function(data) {
+							if(data){
+								$(".rename").css("display","block");
+							}else{
+								$(".rename").css("display","none");
 							}
 						},
-						loaded: function(h) {
-							$(".jbox-content", top.document).css("overflow-y", "hidden");
+						error : function(){
 						}
 					});
-
+					/* if ($(this).val() == "111") {
+						$(".rename").fadeIn(500).delay(600).fadeOut(500);
+					} */
 				})
-				
-				
-	$("#officeView").click(function(){
-		// 正常打开	
-		var pid = $("#companyId").val();
-		$.jBox.open("iframe:/brushface/a/tag/treeselect?url="+encodeURIComponent("/sys/office/treeData?type=2&pid="+pid)+"&module=&checked=&extId=&isAll=", "选择部门", 300, 420, {
-			ajaxData:{selectIds: $("#officeId").val()},buttons:{"确定":"ok", "关闭":true}, submit:function(v, h, f){
-				if (v=="ok"){
-					var tree = h.find("iframe")[0].contentWindow.tree;//h.find("iframe").contents();
-					var ids = [], names = [], nodes = [];
-					if ("" == "true"){
-						nodes = tree.getCheckedNodes(true);
-					}else{
-						nodes = tree.getSelectedNodes();
-					}
-					for(var i=0; i<nodes.length; i++) {//
-						if (nodes[i].isParent){
-							top.$.jBox.tip("不能选择父节点（"+nodes[i].name+"）请重新选择。");
-							return false;
-						}//
-						ids.push(nodes[i].id);
-						names.push(nodes[i].name);//
-						break; // 如果为非复选框选择，则返回第一个选择  
-					}
-					$("#officeId").val(ids.join(",").replace(/u_/ig,""));
-					$("#officeName").val(names.join(","));
-					$("#officeView").val($("#officeName").val());
-				}//
-				if(typeof officeTreeselectCallBack == 'function'){
-					officeTreeselectCallBack(v, h, f);
-				}
-			}, loaded:function(h){
-				$(".jbox-content", top.document).css("overflow-y","hidden");
-			}
-		});
-	});
+				$("#companyView").val($("#companyName").val())
+				$("#officeView").val($("#officeName").val())
+				$("#companyView")
+						.click(
+								function() {
+									$.jBox
+											.open(
+													"iframe:/brushface/a/tag/treeselect?url="
+															+ encodeURIComponent("/sys/office/treeData?type=1")
+															+ "&module=&checked=&extId=&isAll=",
+													"选择公司",
+													300,
+													420,
+													{
+														ajaxData : {
+															selectIds : $(
+																	"#companyGetId")
+																	.val()
+														},
+														buttons : {
+															"确定" : "ok",
+															"关闭" : true
+														},
+														submit : function(v, h,
+																f) {
+															if (v == "ok") {
+																var tree = h
+																		.find("iframe")[0].contentWindow.tree; //h.find("iframe").contents();
+																var ids = [], names = [], nodes = [];
+																if ("" == "true") {
+																	nodes = tree
+																			.getCheckedNodes(true);
+																} else {
+																	nodes = tree
+																			.getSelectedNodes();
+																}
+																for (var i = 0; i < nodes.length; i++) { //
+																	ids
+																			.push(nodes[i].id);
+																	names
+																			.push(nodes[i].name); //
+																	break; // 如果为非复选框选择，则返回第一个选择  
+																}
+																$("#companyId")
+																		.val(
+																				ids
+																						.join(
+																								",")
+																						.replace(
+																								/u_/ig,
+																								""));
+																$(
+																		"#companyName")
+																		.val(
+																				names
+																						.join(","));
+																$(
+																		"#companyView")
+																		.val(
+																				$(
+																						"#companyName")
+																						.val())
+															} //
+															if (typeof companyGetTreeselectCallBack == 'function') {
+																companyGetTreeselectCallBack(
+																		v, h, f);
+															}
+														},
+														loaded : function(h) {
+															$(
+																	".jbox-content",
+																	top.document)
+																	.css(
+																			"overflow-y",
+																			"hidden");
+														}
+													});
+
+								})
+
+				$("#officeView")
+						.click(
+								function() {
+									// 正常打开	
+									var pid = $("#companyId").val();
+									$.jBox
+											.open(
+													"iframe:/brushface/a/tag/treeselect?url="
+															+ encodeURIComponent("/sys/office/treeData?type=2&pid="
+																	+ pid)
+															+ "&module=&checked=&extId=&isAll=",
+													"选择部门",
+													300,
+													420,
+													{
+														ajaxData : {
+															selectIds : $(
+																	"#officeId")
+																	.val()
+														},
+														buttons : {
+															"确定" : "ok",
+															"关闭" : true
+														},
+														submit : function(v, h,
+																f) {
+															if (v == "ok") {
+																var tree = h
+																		.find("iframe")[0].contentWindow.tree;//h.find("iframe").contents();
+																var ids = [], names = [], nodes = [];
+																if ("" == "true") {
+																	nodes = tree
+																			.getCheckedNodes(true);
+																} else {
+																	nodes = tree
+																			.getSelectedNodes();
+																}
+																for (var i = 0; i < nodes.length; i++) {//
+																	if (nodes[i].isParent) {
+																		top.$.jBox
+																				.tip("不能选择父节点（"
+																						+ nodes[i].name
+																						+ "）请重新选择。");
+																		return false;
+																	}//
+																	ids
+																			.push(nodes[i].id);
+																	names
+																			.push(nodes[i].name);//
+																	break; // 如果为非复选框选择，则返回第一个选择  
+																}
+																$("#officeId")
+																		.val(
+																				ids
+																						.join(
+																								",")
+																						.replace(
+																								/u_/ig,
+																								""));
+																$("#officeName")
+																		.val(
+																				names
+																						.join(","));
+																$("#officeView")
+																		.val(
+																				$(
+																						"#officeName")
+																						.val());
+															}//
+															if (typeof officeTreeselectCallBack == 'function') {
+																officeTreeselectCallBack(
+																		v, h, f);
+															}
+														},
+														loaded : function(h) {
+															$(
+																	".jbox-content",
+																	top.document)
+																	.css(
+																			"overflow-y",
+																			"hidden");
+														}
+													});
+								});
 
 			})
 		</script>

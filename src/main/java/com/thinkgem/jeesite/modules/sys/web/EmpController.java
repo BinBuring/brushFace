@@ -9,10 +9,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -151,14 +154,10 @@ public class EmpController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "checkName")
-	public String checkName(String name) {
-		User user = new User();
-		user.setName(name);
-		List<User> list = systemService.findUser(user);
-		System.out.println(list.size());
-		return "false";
+	public boolean checkName(String name) {
+		boolean bb = systemService.checkName(name);
+		return bb;
 	}
 	/**
 	 * 人员授权设备
@@ -182,7 +181,8 @@ public class EmpController extends BaseController {
 		Page<User> page = systemService.findUser(new Page<User>(request, response), user);
 		return page;
 	}
-
+	
+   
 	@SuppressWarnings("unused")
 	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "empsave")

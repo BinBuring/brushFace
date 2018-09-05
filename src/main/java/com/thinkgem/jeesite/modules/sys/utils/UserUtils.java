@@ -3,7 +3,11 @@
  */
 package com.thinkgem.jeesite.modules.sys.utils;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
@@ -69,6 +73,7 @@ public class UserUtils {
 		}
 		return user;
 	}
+
 	/**
 	 * 根据ID获取角色
 	 * @param id
@@ -292,6 +297,19 @@ public class UserUtils {
 	public static void removeCache(String key) {
 //		getCacheMap().remove(key);
 		getSession().removeAttribute(key);
+	}
+
+	public static List<User> findYQUser(Date date) {
+		return userDao.findYQUser(date);
+	}
+
+	public static void updateUser(User user) {
+		userDao.update(user);
+		
+	}
+
+	public static List<User> findJHUser(Date date) {
+		return userDao.findJHUser(date);
 	}
 	
 //	public static Map<String, Object> getCacheMap(){

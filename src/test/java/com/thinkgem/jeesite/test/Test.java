@@ -1,41 +1,41 @@
 package com.thinkgem.jeesite.test;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-
-import org.h2.util.New;
-
-import com.thinkgem.jeesite.common.utils.GsonUtils;
-
-import sun.misc.BASE64Encoder;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Test {
-	public static  String getImageBinary(File f){     
-		BASE64Encoder encoder = new BASE64Encoder();   //加密
-		BufferedImage bi;      
-		try {      
-			bi = ImageIO.read(f);      
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();      
-			ImageIO.write(bi, "jpg", baos);      
-			byte[] bytes = baos.toByteArray();      
-			
-			return encoder.encodeBuffer(bytes).trim();      
-		} catch (IOException e) {      
-			e.printStackTrace();      
-		}      
-		return null;      
-	}
+	  static int count =0;
+	    
+	    public static void showTimer() {
+	       TimerTask task = new TimerTask() {
+	          @Override
+	           public void run() {
+	              ++count;
+	              System.out.println("时间=" +new Date() + " 执行了" + count + "次"); // 1次
+	           }
+	       };
 
-	public static void main(String[] args) {
-		
-		
+	       //设置执行时间
+	       Calendar calendar =Calendar.getInstance();
+	       int year = calendar.get(Calendar.YEAR);
+	       int month = calendar.get(Calendar.MONTH);
+	       int day =calendar.get(Calendar.DAY_OF_MONTH);//每天
+	       //定制每天的21:09:00执行，
+	       calendar.set(year, month, day, 15, 11, 00);
+	       Date date = calendar.getTime();
+	       Timer timer = new Timer();
+	       System.out.println(date);
+	       
+	       int period = 2 * 1000;
+	       //每天的date时刻执行task，每隔2秒重复执行
+	      // timer.schedule(task, date, period);
+	       //每天的date时刻执行task, 仅执行一次
+	       timer.schedule(task, date);
+	    }
+
+	    public static void main(String[] args) {
+	       showTimer();
+	    }
 	}
-}

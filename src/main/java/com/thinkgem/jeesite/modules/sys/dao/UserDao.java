@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.sys.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
@@ -75,5 +76,12 @@ public interface UserDao extends CrudDao<User> {
 	public User getByNo(String no);
 
 	public User getUserByGuid(String guid);
+
+	public List<User> checkName(String name);
+
+	public List<User> findYQUser(Date date);
+
+	public List<User> findJHUser(Date date);
+
 
 }

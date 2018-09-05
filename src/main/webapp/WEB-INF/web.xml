@@ -17,6 +17,10 @@
 	<listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>  
 	</listener>
+	<!--NFDFlightDataTaskListener 监听器-->
+	<listener>
+	    <listener-class>com.thinkgem.jeesite.modules.sys.utils.NFDFlightDataTaskListener</listener-class>
+	</listener>
 	<filter>
 		<filter-name>encodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>

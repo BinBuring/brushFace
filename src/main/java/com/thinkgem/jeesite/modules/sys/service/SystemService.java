@@ -127,6 +127,15 @@ public class SystemService extends BaseService implements InitializingBean {
 		return list;
 	}
 
+	public boolean checkName(String name){
+		List<User> list = userDao.checkName(name);
+		if (list != null && list.size()>0) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
 	/**
 	 * 通过部门ID获取用户列表，仅返回用户id和name（树查询用户时用）
 	 * @param user
@@ -571,6 +580,9 @@ public class SystemService extends BaseService implements InitializingBean {
 			String userId = user.getLoginName();//ObjectUtils.toString(user.getId());
 			identityService.deleteUser(userId);
 		}
+	}
+	public List<User> findYQUser(Date date) {
+		return userDao.findYQUser(date);
 	}
 
 
