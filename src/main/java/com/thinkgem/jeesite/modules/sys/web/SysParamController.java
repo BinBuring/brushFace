@@ -43,8 +43,9 @@ public class SysParamController extends BaseController {
 		if (entity == null){
 			entity = new SysParam();
 		}
+		
 		return entity;
-	}
+	}   
 	
 	public boolean getDays(String id){
 		SysParam sys = sysParamService.get(id);
