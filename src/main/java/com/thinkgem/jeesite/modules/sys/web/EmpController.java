@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -477,54 +479,69 @@ public class EmpController extends BaseController {
     * @throws IOException 
      */
     private Map<String,Object> saveFile(HttpServletRequest request, MultipartFile file){
-    	 long filesize = 4000000; //默认上传文件大小，4M
-    	 Map<String,Object> result =  new HashMap<String,Object>();
-    	 String newfilename = "";
-    	 if (file!=null){
-    		 String [] filename = file.getOriginalFilename().split("\\.");
-    		 if(!(filename[1].equals("jpg") || filename[1].equals("png")|| filename[1].equals("jpeg")|| filename[1].equals("JPEG")|| filename[1].equals("JPG")|| filename[1].equals("PNG")||filename[1].equals("bmp"))){
-    			 result.put("state",0);
-    			 result.put("message", "上传失败，文件类型不正确");
-    			 return result;
-             }
-    		 
-    		  if(file.getSize()>filesize){
-    			  result.put("state",0);
-     			 result.put("message", "上传失败，文件大小超出限制");
-     			 return result;
-              }
-    		  
-    		  String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.'));
-    		  
-              newfilename = IdGen.uuid() +suffix;
-              SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-              String year = sdf.format(new Date());
-              sdf = new SimpleDateFormat("MM");
-              String month = sdf.format(new Date());
-              String urlpath = "/brushface/userfiles/1/images/photo/" + year + "/" + month + "/" + newfilename;
-              String filePath = request.getSession().getServletContext()
-                      .getRealPath("/") + "/userfiles/1/images/photo/" + year + "/" + month + "/" + newfilename;
-              File saveDir = new File(filePath);
-              if (!saveDir.getParentFile().exists())
-                  saveDir.getParentFile().mkdirs();
-              
-              try {
-            	  file.transferTo(saveDir);
+    	Map<String,Object> result =  new HashMap<String,Object>();
+   	 String newfilename = "";
+   	 File saveDir = null;
+   	 if (file!=null){
+   		 String [] filename = file.getOriginalFilename().split("\\.");
+   		 if(!(filename[1].equals("jpg") || filename[1].equals("png")|| filename[1].equals("jpeg")|| filename[1].equals("JPEG")|| filename[1].equals("JPG")|| filename[1].equals("PNG")||filename[1].equals("bmp"))){
+   			 result.put("state",0);
+   			 result.put("message", "上传失败，文件类型不正确");
+   			 return result;
+            }
+   		 
+   		  String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.'));
+   		  
+             newfilename = IdGen.uuid() +suffix;
+             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+             String year = sdf.format(new Date());
+             sdf = new SimpleDateFormat("MM");
+             String month = sdf.format(new Date());
+             String urlpath = "/brushface/userfiles/1/images/photo/" + year + "/" + month + "/" + newfilename;
+             String filePath = request.getSession().getServletContext()
+                     .getRealPath("/") + "/userfiles/1/images/photo/" + year + "/" + month + "/" + newfilename;
+             saveDir = new File(filePath);
+				
+             if (!saveDir.getParentFile().exists())
+                 saveDir.getParentFile().mkdirs();
+             
+             try {
+           	file.transferTo(saveDir);
 			} catch (Exception e) {
 				e.printStackTrace();
 				 result.put("state",0);
-     			 result.put("message", "文件保存失败");
-     			 return result;
+    			 result.put("message", "文件保存失败");
+    			 return result;
 			}
-              result.put("name",newfilename);
-              result.put("url",urlpath);
-              result.put("state",1);
-              result.put("message","ok");
-              
-              return result;
-    	 }
-    	 result.put("state",0);
+             
+             File newFile = new File(saveDir.getAbsolutePath());
+             if(newFile == null || !newFile.exists()){
+           	  return result;
+             }
+             long size = newFile.length();
+             double scale = 1.0;
+             if(size >= 400*1024){
+           	  scale = (400*1024f)/size;
+//           	  System.out.println(scale);
+             }
+             try {
+				if(size>400*1024){
+					  Thumbnails.of(saveDir.getAbsolutePath()).size(400,500).toFile(saveDir.getAbsolutePath());//变为400*300,遵循原图比例缩或放到400*某个高度
+				  }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+             
+             result.put("name",newfilename);
+             result.put("url",urlpath);
+             result.put("state",1);
+             result.put("message","ok");
+             
+             return result;
+   	 }
+   	 result.put("state",0);
 		result.put("message", "上传文件不存在");
+		
 		return result;
     	 
     	 

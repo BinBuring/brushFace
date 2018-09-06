@@ -21,6 +21,14 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="getDays" resultType="int">
+		SELECT 
+			TIMESTAMPDIFF(DAY,p.create_date,p.`update_date`)
+		FROM sys_param a
+		<include refid="sysParamJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
 	<select id="findList" resultType="SysParam">
 		SELECT 
 			<include refid="sysParamColumns"/>

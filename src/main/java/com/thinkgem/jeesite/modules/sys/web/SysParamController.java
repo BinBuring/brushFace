@@ -46,6 +46,15 @@ public class SysParamController extends BaseController {
 		return entity;
 	}
 	
+	public boolean getDays(String id){
+		SysParam sys = sysParamService.get(id);
+		int days = sysParamService.getDays(id);
+		if(Integer.parseInt(sys.getContent()) <= days ){
+			return true;
+		}
+		return false;
+	}
+	
 	@RequestMapping(value = {"list", ""})
 	public String list(SysParam sysParam, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<SysParam> page = sysParamService.findPage(new Page<SysParam>(request, response), sysParam); 
