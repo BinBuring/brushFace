@@ -27,6 +27,15 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 	protected D dao;
 	
 	/**
+	 * 获取有效天数
+	 * @param id
+	 * @return
+	 */
+	public int getDays(String id){
+		return dao.getDays(id);
+	}
+	
+	/**
 	 * 获取单条数据
 	 * @param id
 	 * @return

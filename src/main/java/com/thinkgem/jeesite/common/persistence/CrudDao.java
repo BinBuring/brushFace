@@ -14,6 +14,13 @@ import java.util.List;
 public interface CrudDao<T> extends BaseDao {
 
 	/**
+	 * 获取有效天数
+	 * @param id
+	 * @return
+	 */
+	public int getDays(String id);
+	
+	/**
 	 * 获取单条数据
 	 * @param id
 	 * @return

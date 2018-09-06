@@ -43,7 +43,17 @@ public class SysParamController extends BaseController {
 		if (entity == null){
 			entity = new SysParam();
 		}
+		
 		return entity;
+	}   
+	
+	public boolean getDays(String id){
+		SysParam sys = sysParamService.get(id);
+		int days = sysParamService.getDays(id);
+		if(Integer.parseInt(sys.getContent()) <= days ){
+			return true;
+		}
+		return false;
 	}
 	
 	@RequestMapping(value = {"list", ""})

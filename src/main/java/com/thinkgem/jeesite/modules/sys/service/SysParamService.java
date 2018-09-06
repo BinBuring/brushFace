@@ -21,6 +21,10 @@ import com.thinkgem.jeesite.modules.sys.dao.SysParamDao;
 @Service
 @Transactional(readOnly = true)
 public class SysParamService extends CrudService<SysParamDao, SysParam> {
+	
+	public int getDays(String id){
+		return super.getDays(id);
+	}
 
 	public SysParam get(String id) {
 		return super.get(id);
