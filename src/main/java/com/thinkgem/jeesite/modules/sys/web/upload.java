@@ -5,6 +5,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -47,6 +49,24 @@ public class upload {
         }
         try {
             file.transferTo(dest);
+            
+            File newFile = new File(dest.getAbsolutePath());
+            if(newFile == null || !newFile.exists()){
+          	  return "任务失败！";
+            }
+            long size = newFile.length();
+            double scale = 1.0;
+            if(size >= 400*1024){
+          	  scale = (400*1024f)/size;
+//          	  System.out.println(scale);
+            }
+            try {
+				if(size>400*1024){
+					  Thumbnails.of(dest.getAbsolutePath()).size(400,500).toFile(dest.getAbsolutePath());//变为400*300,遵循原图比例缩或放到400*某个高度
+				  }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
   
             Long res = 0L;
 

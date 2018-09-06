@@ -366,14 +366,14 @@
 			var formData = new FormData(document.getElementById("imgupload"));
 			 var f = document.getElementById("upfile");  
 			 var tag = 1;
-			 $.each(f.files, function(i,val) {
+			 /* $.each(f.files, function(i,val) {
 			 	if(val.size > 400000){
 			 		alert('文件不能大于400KB');
 			 		f.value = '';
 			 		f.outerHTML = f.outerHTML;
 			 		tag = 0;
 			 	}
-			 });
+			 }); */
 			 if(tag!=1)return;
 			var filepath = $("#upfile").val();
 			var ext = GetFileExt(filepath);
