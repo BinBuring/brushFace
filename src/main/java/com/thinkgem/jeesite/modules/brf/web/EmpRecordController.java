@@ -15,6 +15,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,10 +145,10 @@ public class EmpRecordController extends BaseController {
 	//@RequestMapping(value = "upload",method = RequestMethod.POST)
 	@RequestMapping(value = "upload")
 	public String form(MultipartFile file,String type,String user,HttpServletRequest request) {
-		long filesize = 300000; //默认上传文件大小，400KB
+		/*long filesize = 300000; //默认上传文件大小，400KB
 		if(file.getSize()>filesize){
  			 return "上传失败，文件大小超出限制";
-         }
+         }*/
 		String no = request.getParameter("user");
 		User us = new User();
 		us = systemService.getByNo(no);
@@ -179,6 +181,25 @@ public class EmpRecordController extends BaseController {
         }
         try {
             file.transferTo(dest);
+            
+            File newFile = new File(dest.getAbsolutePath());
+            if(newFile == null || !newFile.exists()){
+          	  return "上传失败！";
+            }
+            long size = newFile.length();
+            double scale = 1.0;
+            if(size >= 400*1024){
+          	  scale = (400*1024f)/size;
+//          	  System.out.println(scale);
+            }
+            try {
+				if(size>400*1024){
+					  Thumbnails.of(dest.getAbsolutePath()).size(400,500).rotate(-90).toFile(dest.getAbsolutePath());//变为400*300,遵循原图比例缩或放到400*某个高度
+				  }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+            
             Long res = 0L;
             if (res != 0) {
                 return "上传成功！";
