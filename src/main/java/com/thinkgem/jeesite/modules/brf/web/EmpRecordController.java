@@ -204,11 +204,16 @@ public class EmpRecordController extends BaseController {
             if (res != 0) {
                 return "上传成功！";
             } else {
-            	ResultData data=shenHe(us, request);
-            	if(data.getSuccess().equals("false")){
-            		return data.getMsg();
-            	}
-            	//LOG.error("TaskId插入失败");
+            	if (StringUtils.isNotEmpty(us.getSqDev())) {
+            		ResultData data=shenHe(us, request);
+            		if(data.getSuccess().equals("false")){
+            			return data.getMsg();
+            		}
+				}else {
+					us.setAuthPhone("1");
+					us.setStatus("0");
+					systemService.saveUser(us);
+				}
                 return "上传成功";
             }
         } catch (IllegalStateException e) {
