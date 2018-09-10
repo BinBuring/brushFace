@@ -149,7 +149,7 @@
 					</p>
 				</div>
 				<div class="button fl">
-					<shiro:hasPermission name="sys:user:edit"><input id="btnSubmit" class="confirm fl save" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+					<input id="btnSubmit" class="confirm fl save" type="submit" value="保 存"/>
 					<input type="button" class="return fr" value="返回">
 				</div>
 			</div>

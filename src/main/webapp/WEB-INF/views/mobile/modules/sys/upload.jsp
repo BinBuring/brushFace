@@ -7,7 +7,9 @@
     <meta name="viewport" content="width=750",user-scalable="no"/>
     <link rel="stylesheet" href="${ctxStatic}/brf/css/login.css">
     <link rel="stylesheet" href="${ctxStatic}/brf/css/upload.css">
+    <link rel="stylesheet" href="${ctxStatic}/layui/css/layui.mobile.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="${ctxStatic}/layui/layui.js"></script>
     <script src="${ctxStatic}/brf/js/upload.js"></script>
 </head>
 <body>
@@ -23,18 +25,20 @@
                 <label>工号：</label>
                 <input type="text" value="" id="no" name="no" class="scInput chang" placeholder="请输入工号">
             </div>
-            <div class="input department">
-                <label>部门：</label>
-                <input type="text" value="" class="scInput chang" placeholder="请输入部门/单位">
-            </div>
-            
         </div>
-      </div>  
+    </div>  
     <div class="image">
         <img id="ImgPr" src="${ctxStatic}/brf/img/back_03.jpg" alt="">
         <div class="upload"> <input id="upload" type="file"></div>
     </div>
     <div class="tips">注：请上传清晰正脸的生活照</div>
+        <!-- 进度条 -->
+        <div class="box2">
+		    <div class="big">
+		        <div class="samll"></div>
+		        <p>正在上传中，请稍后</p>
+		    </div>
+		</div>
       <div class="angle">调整角度</div>
     <div class="confirm_upload">确认上传</div>
     <!-- <div class="re_upload">重新上传<input id="re_upload" type="file"></div> -->
@@ -57,9 +61,11 @@
         </div>
     </div> -->
 
-
 </div>
 </form>
 
+<script type="text/javascript">
+
+</script>
 </body>
 </html>

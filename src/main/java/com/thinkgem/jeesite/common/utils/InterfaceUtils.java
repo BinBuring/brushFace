@@ -163,6 +163,46 @@ public class InterfaceUtils {
 		}
 		return Integer.toString(resultCode);
 	}
+	public static String HttpPost(String urlPath,String token,String param) throws IOException {
+		// 建立连接
+		URL url = new URL(urlPath);
+		HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+		// 设置参数
+		httpConn.setDoOutput(true); // 需要输出
+		httpConn.setDoInput(true); // 需要输入
+		httpConn.setUseCaches(false); // 不允许缓存
+		httpConn.setRequestMethod("POST"); // 设置POST方式连接
+		// 设置请求属性
+		httpConn.setRequestProperty("Content-Type","application/json;charset=UTF-8");
+		httpConn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
+		httpConn.setRequestProperty("Charset","UTF-8");
+		httpConn.setRequestProperty("token",token);
+		
+		// 连接,也可以不用明文connect，使用下面的httpConn.getOutputStream()会自动connect
+		httpConn.connect();
+		/*StringEntity s = new StringEntity(param,Charset.forName("UTF-8"));  //对参数进行编码，防止中文乱码
+    	s.setContentEncoding("UTF-8");*/
+		// 建立输入流，向指向的URL传入参数
+		DataOutputStream dos = new DataOutputStream(httpConn.getOutputStream());
+		dos.writeBytes(param);
+		dos.flush();
+		dos.close();
+		// 获得响应状态
+		int resultCode = httpConn.getResponseCode();
+		if (HttpURLConnection.HTTP_OK == resultCode) {
+			StringBuffer sb = new StringBuffer();
+			String readLine = new String();
+			BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
+			while ((readLine = responseReader.readLine()) != null) {
+				sb.append(readLine).append("\n");
+			}
+			responseReader.close();
+			
+			return sb.toString();
+		}
+		
+		return Integer.toString(resultCode);
+	}
 	public static String HttpPost(String urlPath,String param) throws IOException {
 		// 建立连接
 		URL url = new URL(urlPath);
@@ -222,8 +262,8 @@ public class InterfaceUtils {
             // 设置通用的请求属性
             connection.setRequestProperty("accept", "*/*");
             connection.setRequestProperty("connection", "Keep-Alive");
-            connection.setRequestProperty("user-agent",
-                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            connection.setRequestProperty("user-agent","Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            connection.setRequestProperty("accessKey", "9E53675FC79445FDA8A81169278965E9");
             // 建立实际的连接
             connection.connect();
             // 获取所有响应头字段
@@ -267,6 +307,25 @@ public class InterfaceUtils {
             // 参数值为空，则不参与签名 这个方法trim()是去空格
             if (map.get(keyArray[i]).trim().length() > 0) {
                 sb.append(keyArray[i]).append("=").append(map.get(keyArray[i]).trim());
+            }
+            if(i != keyArray.length-1){
+                sb.append("&");
+            }
+        }
+        return sb.toString();
+    }
+	public static String getMapToJsonString(Map<String,String> map){
+        Set<String> keySet = map.keySet();
+        //将set集合转换为数组
+        String[] keyArray = keySet.toArray(new String[keySet.size()]);
+        //给数组排序(升序)
+        Arrays.sort(keyArray);
+        //因为String拼接效率会很低的，所以转用StringBuilder。博主会在这篇博文发后不久，会更新一篇String与StringBuilder开发时的抉择的博文。
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < keyArray.length; i++) {
+            // 参数值为空，则不参与签名 这个方法trim()是去空格
+            if (map.get(keyArray[i]).trim().length() > 0) {
+                sb.append(keyArray[i]).append(":").append(map.get(keyArray[i]).trim());
             }
             if(i != keyArray.length-1){
                 sb.append("&");

@@ -37,6 +37,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.sun.tools.corba.se.idl.constExpr.And;
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
@@ -177,7 +178,6 @@ public class EmpController extends BaseController {
 		return "modules/brf/userDevList";
 	}
 	@ResponseBody
-	@RequiresPermissions("sys:user:view")
 	@RequestMapping(value = {"listData"})
 	public Page<User> listData(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<User> page = systemService.findUser(new Page<User>(request, response), user);
@@ -186,7 +186,6 @@ public class EmpController extends BaseController {
 	
    
 	@SuppressWarnings("unused")
-	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "empsave")
 	public String empsave(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes){
 		String yq = request.getParameter("yq");
@@ -211,6 +210,8 @@ public class EmpController extends BaseController {
 				roleList.add(r);
 			}
 		}
+		user.setStatus("0");	  //设置状态为未审核
+		user.setAuthPhone("1");  //设置照片状态为未授权
 		//判断审核状态，如果未审核，只在本地修改，不上传到云端
 		if (StringUtils.isNotEmpty(user.getId()) &&user.getStatus().equals("0")) {
 			systemService.saveUser(user);
@@ -283,14 +284,28 @@ public class EmpController extends BaseController {
 	 */
 	@RequestMapping(value = "audit")
 	public String audit(User user,RedirectAttributes redirectAttributes,HttpServletRequest request){
+		ResultData data = new ResultData();
 		if (StringUtils.isEmpty(user.getPhoto())) {
 			addMessage(redirectAttributes, "审核员工" + user.getName() + "'失败,该员工头像不符合");
 			return "redirect:" + adminPath + "/sys/emp/list?repage";
+		}else {
+			data = interfaceService.faceDetect(user,request);
+			if (data != null && data.getSuccess().equals("false")) {
+				addMessage(redirectAttributes, "头像检测不通过，请重新上传");
+				return "redirect:" + adminPath + "/sys/emp/list?repage";
+			}else {
+				Map<String, String> map = interfaceService.personDetect(data);
+            	if (map.get("success").equals("error")) {
+					addMessage(redirectAttributes, map.get("msg"));
+					return "redirect:" + adminPath + "/sys/emp/list?repage";
+				}
+			}
 		}
 		/*if (user.getAuthPhone().equals("1")) {
 			addMessage(redirectAttributes, "审核员工" + user.getName() + "'失败，该员工未授权");
 			return "redirect:" + adminPath + "/sys/emp/list?repage";
 		}*/
+		
 		//根据有效期判断用户状态
 		long now = new Date().getTime();
 		if (user.getStartDate().getTime() < now && user.getEndDate().getTime() > now) {
@@ -301,9 +316,9 @@ public class EmpController extends BaseController {
 			user.setStatus("3");
 		}
 		//在云端上保存员工
-		ResultData data = new ResultData();
 		if(StringUtils.isNotEmpty(user.getGuid())){  //如果该用户有guid，说明云端上有此人信息，不能创建，只能更新
 			data = interfaceService.updateEmp(user);
+			interfaceService.deletePhoto(user);
 		}else {
 			data = interfaceService.createEmp(user);  //如果guid为null，说明云端上没有信息，创建员工
 			Map<String, String> map = InterfaceUtils.getStringToMap(data.getData().toString());
@@ -312,6 +327,7 @@ public class EmpController extends BaseController {
 		if (data != null && data.getSuccess().equals("true")) {
 			ResultData result = interfaceService.empimageUrl(user, request);
 			if (result.getSuccess().equals("true")) {
+				user.setPhotoId(InterfaceUtils.getStringToMap(result.getData().toString()).get("guid"));
 				systemService.saveUser(user);
 			}else {
 				addMessage(redirectAttributes, "审核员工" + user.getName() + "'的照片失败,"+result.getMsg()+",请重新上传");
@@ -325,7 +341,6 @@ public class EmpController extends BaseController {
 		return "redirect:" + adminPath + "/sys/emp/list?repage";
 	}
 	
-	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "empdelete")
 	public String delete(User user, RedirectAttributes redirectAttributes) {
 		if(Global.isDemoMode()){
@@ -337,8 +352,14 @@ public class EmpController extends BaseController {
 		}else if (User.isAdmin(user.getId())){
 			addMessage(redirectAttributes, "删除员工失败, 不允许删除超级管理员员工");
 		}else{
-			ResultData resultData = interfaceService.deleteEmp(user);
-			if (resultData.getSuccess().equals("true")) {
+			ResultData resultData = new ResultData();
+			if (StringUtils.isNotEmpty(user.getGuid())) {
+				resultData = interfaceService.deleteEmp(user);
+				if (resultData.getSuccess().equals("true")) {
+					systemService.deleteUser(user);
+					addMessage(redirectAttributes, "删除员工成功");
+				}
+			}else {
 				systemService.deleteUser(user);
 				addMessage(redirectAttributes, "删除员工成功");
 			}
@@ -354,7 +375,6 @@ public class EmpController extends BaseController {
 	 * @param redirectAttributes
 	 * @return
 	 */
-	@RequiresPermissions("sys:user:view")
     @RequestMapping(value = "empexport", method=RequestMethod.POST)
     public String exportFile(User user, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
@@ -374,7 +394,6 @@ public class EmpController extends BaseController {
 	 * @param redirectAttributes
 	 * @return
 	 */
-	@RequiresPermissions("sys:user:edit")
     @RequestMapping(value = "empimport", method=RequestMethod.POST)
     public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
 		if(Global.isDemoMode()){
@@ -462,7 +481,6 @@ public class EmpController extends BaseController {
 	
 	/*上传头像接口*/
 	@RequestMapping(value = "uploadImg")
-	@RequiresPermissions("sys:user:edit")
 	@ResponseBody
 	public Map<String,Object> uploadImg(@RequestParam("myfiles") MultipartFile[] files,
             HttpServletRequest request,HttpServletResponse response){

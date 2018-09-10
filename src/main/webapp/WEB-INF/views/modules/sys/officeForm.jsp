@@ -108,6 +108,8 @@
 					<div id="type">
 						<div class="controls">
 						<input type="hidden" value="1" name='grade' id="grade" />
+						<input type="hidden" value="${type}" name='type' id="type" />
+						<input type="hidden" value="1" name='useable' id="useable" />
 					</div>	
 					
 					<div class="button" style="text-align: left;">

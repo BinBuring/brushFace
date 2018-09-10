@@ -75,7 +75,8 @@ public class OfficeController extends BaseController {
 	
 	@RequiresPermissions("sys:office:view")
 	@RequestMapping(value = "form")
-	public String form(Office office, Model model) {
+	public String form(Office office, Model model,HttpServletRequest request) {
+		String type = request.getParameter("istype");
 		User user = UserUtils.getUser();
 		if (office.getParent()==null || office.getParent().getId()==null){
 			office.setParent(user.getOffice());
@@ -98,18 +99,19 @@ public class OfficeController extends BaseController {
 			office.setCode(office.getParent().getCode() + StringUtils.leftPad(String.valueOf(size > 0 ? size+1 : 1), 3, "0"));
 		}
 		model.addAttribute("office", office);
+		model.addAttribute("type", type);
 		return "modules/sys/officeForm";
 	}
 	
 	@RequiresPermissions("sys:office:edit")
 	@RequestMapping(value = "save")
-	public String save(Office office, Model model, RedirectAttributes redirectAttributes) {
+	public String save(Office office, Model model, RedirectAttributes redirectAttributes,HttpServletRequest request) {
 		if(Global.isDemoMode()){
 			addMessage(redirectAttributes, "演示模式，不允许操作！");
 			return "redirect:" + adminPath + "/sys/office/";
 		}
 		if (!beanValidator(model, office)){
-			return form(office, model);
+			return form(office, model,request);
 		}
 		officeService.save(office);
 		
@@ -163,7 +165,7 @@ public class OfficeController extends BaseController {
 			@RequestParam(required=false) Long grade, @RequestParam(required=false) Boolean isAll, HttpServletResponse response,HttpServletRequest request) {
 		String pid = request.getParameter("pid");
 		List<Map<String, Object>> mapList = Lists.newArrayList();
-		List<Office> list = officeService.findList(isAll);
+		List<Office> list = officeService.findList(true);
 		for (int i=0; i<list.size(); i++){
 			Office e = list.get(i);
 			if (StringUtils.isEmpty(pid)) {  //有父类id的话只选取本公司下的部门

@@ -63,6 +63,8 @@
 						<label>账号：</label>
 						<%-- <input id="oldLoginName" name="oldLoginName" type="hidden" value="${user.loginName}"> --%>
 						<form:input path="loginName" htmlEscape="false" maxlength="50" class="scInput chang" placeholder="请输入用户账号" />
+						<input type="hidden" id="company" name="company.id" value = "016490eb3c504733a605bfd4d9490767">
+						<input type="hidden" id="office" name="office.id" value = "016490eb3c504733a605bfd4d9490767">
 					</div>
 					<div >
 						<label>姓名：</label>
@@ -80,7 +82,7 @@
 						<input id="confirmNewPassword" name="confirmNewPassword" type="password" value="" maxlength="50" minlength="3" equalTo="#newPassword" class="scInput chang" placeholder="请输入确认密码" />
 					</div>
 					<div class="enlogin">
-						<label >是否允许登录:</label>
+						<label>是否允许登录:</label>
 							<form:select path="loginFlag" class="scInput chang" style="width: 70px;">
 								<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" />
 							</form:select>

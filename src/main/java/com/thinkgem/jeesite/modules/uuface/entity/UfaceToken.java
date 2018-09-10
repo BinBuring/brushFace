@@ -4,9 +4,10 @@
 package com.thinkgem.jeesite.modules.uuface.entity;
 
 import org.hibernate.validator.constraints.Length;
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
@@ -19,7 +20,16 @@ public class UfaceToken extends DataEntity<UfaceToken> {
 	private static final long serialVersionUID = 1L;
 	private String token;		// 沃土访问token值
 	private String state;		// token状态。1-正常；0-作废
+	private String type;		// 1是沃土，2是aiot
 	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public UfaceToken() {
 		super();
 	}

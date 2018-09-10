@@ -26,7 +26,7 @@ public class ResultData extends DataEntity<ResultData> {
 	private Object data;		// 返回数据
 	@Expose
 	private String success;		// 成功失败
-	
+
 	public ResultData() {
 		super();
 	}

@@ -7,7 +7,8 @@
 		a.token AS "token",
 		a.state AS "state",
 		a.created_on AS "createDate",
-		a.updated_on AS "updateDate"
+		a.updated_on AS "updateDate",
+		a.type AS "type"
 	</sql>
 	
 	<sql id="ufaceTokenJoins">
@@ -27,6 +28,9 @@
 		FROM sys_uface_token a
 		<include refid="ufaceTokenJoins"/>
 		<where>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
 		</where>
 		order by a.created_on desc
 	</select>
@@ -37,7 +41,6 @@
 		FROM sys_uface_token a
 		<include refid="ufaceTokenJoins"/>
 		<where>
-			
 		</where>		
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -54,13 +57,15 @@
 			token,
 			state,
 			created_on,
-			updated_on
+			updated_on,
+			type 
 		) VALUES (
 			#{id},
 			#{token},
 			#{state},
 			#{createDate},
-			#{updateDate}
+			#{updateDate},
+			#{type}
 		)
 	</insert>
 	
@@ -69,7 +74,8 @@
 			token = #{token},
 			state = #{state},
 			created_on = #{createDate},
-			updated_on = #{updateDate}
+			updated_on = #{updateDate},
+			type = #{type}
 		WHERE id = #{id}
 	</update>
 	

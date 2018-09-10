@@ -9,7 +9,7 @@ $(function () {
     $('#upload').change(function(){
         // 获取FileList的第一个元素
         b=1;
-        console.log(b);
+        //console.log(b);
         var f = document.getElementById('upload').files[0];
         var src = window.URL.createObjectURL(f);
         document.getElementById('ImgPr').src = src;
@@ -21,6 +21,7 @@ $(function () {
         if(b==1){
             current = (current+90)%360;
             $("#ImgPr").css("transform","rotate("+current+"deg)");
+            console.log(current);
             console.log($("#ImgPr").css("transform"));
         }
     })
@@ -33,20 +34,23 @@ $(function () {
     })
 
     //确认上传
-    $(".confirm_upload").click(function () {
-        $(".popup2").css("display","block")
+    $(".confirm_upload").one("click",function () {
+    	console.log(123);
+        $(".popup2").css("display","block");
     })
     
     var uploading = false;
     //上传成功或失败
     $(".confirm").click(function () {
+    	$(".box2").css("display","block")
+    	$(".samll").animate({width:'50%'},5000)
         if(a==0){
             $(".popup2").css("display","none")
             $(".popup").css("display","block")
-            if(uploading){
+            /*if(uploading){
 		        alert("文件正在上传中，请稍候");
 		        return false;
-		    }
+		    }*/
             //获取项目路径
             var strFullPath=window.document.location.href;
             var strPath=window.document.location.pathname;
@@ -62,6 +66,7 @@ $(function () {
             formData.append("type","jpg");
             var no = $("#no").val();
             formData.append("user",no);
+            formData.append("jd",current);
 		    $.ajax({
 		        url: webPath+"/a/brf/empRecord/upload",
 		        type: 'POST',
@@ -84,7 +89,10 @@ $(function () {
 		            uploading = false;
 		    	},
 		        error : function(data){
-		        	alert(data.responseText);
+		        	$(".samll").animate({width:'100%'},500, function () {
+	    		        $(".box2").css("display","none")
+	    		        alert(data.responseText);
+	    		    })
 		        }
 		    });
 		        
@@ -104,4 +112,3 @@ $(function () {
         $(".popup2").css("display","none")
     })
 })
-

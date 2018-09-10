@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.coobird.thumbnailator.Thumbnails;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -149,9 +151,13 @@ public class EmpRecordController extends BaseController {
 		if(file.getSize()>filesize){
  			 return "上传失败，文件大小超出限制";
          }*/
+		String jd = request.getParameter("jd");
 		String no = request.getParameter("user");
 		User us = new User();
 		us = systemService.getByNo(no);
+		if(us == null){
+			return "请输入正确的工号或者工号不存在！！";
+		}
 		String taskType = "F";
         String featureType = type;
         String userOpt = user;
@@ -193,19 +199,34 @@ public class EmpRecordController extends BaseController {
 //          	  System.out.println(scale);
             }
             try {
-				if(size>400*1024){
-					  Thumbnails.of(dest.getAbsolutePath()).size(400,500).rotate(-90).toFile(dest.getAbsolutePath());//变为400*300,遵循原图比例缩或放到400*某个高度
-				  }
+				  Thumbnails.of(dest.getAbsolutePath()).size(400,500).rotate(StringUtils.toDouble(jd)).toFile(dest.getAbsolutePath());//变为400*300,遵循原图比例缩或放到400*某个高度
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
             
             Long res = 0L;
+            ResultData data = new ResultData();
+            data = interfaceService.faceDetect(us,request);
+            //Map<String, String> faces = InterfaceUtils.getStringToMap(data.getData().toString());
+            //Map<String, String> map = InterfaceUtils.getStringToMap(faces);
+           // System.out.println(faces);
+            if (data.getSuccess().equals("false")) {
+            	us.setPhoto("");
+            	us.setAuthPhone("1");
+            	us.setStatus("0");
+            	systemService.saveUser(us);
+            	return "头像上传失败，请调整角度或检查人脸是否清晰";
+            }else {
+            	Map<String, String> map = interfaceService.personDetect(data);
+            	if (map.get("success").equals("error")) {
+					return map.get("msg");
+				}
+			}
             if (res != 0) {
                 return "上传成功！";
             } else {
             	if (StringUtils.isNotEmpty(us.getSqDev())) {
-            		ResultData data=shenHe(us, request);
+            		data=shenHe(us, request);
             		if(data.getSuccess().equals("false")){
             			return data.getMsg();
             		}
@@ -226,6 +247,9 @@ public class EmpRecordController extends BaseController {
             return "上传文件失败,请检查上传的文件,IOException";
         }
 	}
+	
+	
+	
 	/**
 	 * 一步录入，上传照片，授权
 	 * @param user

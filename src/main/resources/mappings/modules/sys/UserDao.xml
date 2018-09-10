@@ -201,11 +201,27 @@
 					<if test="dbName == 'mssql'">'%,'+#{company.id}+',%')</if>
 					<if test="dbName == 'mysql'">CONCAT('%,', #{company.id}, ',%'))</if>
 		</if>
-		<if test="office != null and office.id != null and office.id != ''">
+		<!-- <if test="office != null and office.id != null and office.id != ''">
 			AND (o.id = #{office.id} OR o.parent_ids LIKE 
 					<if test="dbName == 'oracle'">'%,'||#{office.id}||',%')</if>
 					<if test="dbName == 'mssql'">'%,'+#{office.id}+',%')</if>
 					<if test="dbName == 'mysql'">CONCAT('%,', #{office.id}, ',%'))</if>
+		</if>
+		<if test="(office == null or office.id == '') and loginFlag != '0'">
+			AND o.id != '6'
+		</if> -->
+		<if test="loginFlag != null and loginFlag != '' and loginFlag != '0'">
+		<choose>
+			<when test="office != null and office.id != null and office.id != '' ">
+			AND (o.id = #{office.id} OR o.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%,'||#{office.id}||',%')</if>
+					<if test="dbName == 'mssql'">'%,'+#{office.id}+',%')</if>
+					<if test="dbName == 'mysql'">CONCAT('%,', #{office.id}, ',%'))</if>
+			</when>
+			<otherwise>
+				AND o.id != '6'
+			</otherwise>
+		</choose>
 		</if>
 		<if test="no != null  and no != ''">
 			AND a.no = #{no}
@@ -233,7 +249,7 @@
 			AND a.login_flag = #{loginFlag}
 		</if>
 		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
+		<!-- ${sqlMap.dsf} -->
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}

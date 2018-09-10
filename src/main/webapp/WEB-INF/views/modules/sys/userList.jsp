@@ -167,7 +167,7 @@
                     <th width="22%"><fmt:formatDate value="${user.createDate}" type="both" dateStyle="full"/></th>
                     	<shiro:hasPermission name="sys:user:edit"><th width="12%">
     				<a href="${ctx}/sys/user/form?id=${user.id}">编辑</a>
-					<a href="javascript:;" onclick="delUser('${user.id}')" >删除</a>
+					<%-- <a href="javascript:;" onclick="delUser('${user.id}')" >删除</a> --%>
 				</th></shiro:hasPermission>
                 </tr>
                 </c:forEach>

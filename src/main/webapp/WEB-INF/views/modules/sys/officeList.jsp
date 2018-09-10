@@ -120,8 +120,8 @@
 	
     <div class="c_top">
         <div class="operation fl">
-            <div class="add add_first" data="${ctx}/sys/office/form?parent.id=${office.id}">添加一级部门</div>
-            <div class="add add_sec" data="${ctx}/sys/office/form?parent.id=${office.id}">添加二级部门</div>
+            <div class="add add_first" data="${ctx}/sys/office/form?parent.id=${office.id}&istype=1">添加一级部门</div>
+            <div class="add add_sec" data="${ctx}/sys/office/form?parent.id=${office.id}&istype=2">添加二级部门</div>
             <div class="delete">删除</div>
         </div>
         <form:form id="searchForm" modelAttribute="office"

@@ -157,7 +157,7 @@
                    <div class="operation fl">
                        <div class="add" style="cursor: pointer;">添加</div>
                        <div class="qr_code" style="cursor: pointer;">生成二维码</div>
-                       <div class="delete" style="cursor: pointer;">删除</div>
+                       <!-- <div class="delete" style="cursor: pointer;">删除</div> -->
                    </div>
                    <form:form id="searchForm" modelAttribute="user" action="${ctx}/sys/emp/emplist" method="post" class="breadcrumb form-search ">
                    	<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
@@ -247,7 +247,7 @@
                                </c:choose>
                                </td>
                                <td width="11%" class="blue">${fns:getDictLabel(user.authPhone, "photo_status", "")}</td>
-                               <shiro:hasPermission name="sys:user:edit"><td class="blue" width="14%">
+                               <td class="blue" width="14%">
                                		<a href="${ctx}/sys/emp/empDetail?id=${user.id}">查看</a>
 				    				<a href="${ctx}/sys/emp/empform?id=${user.id}">修改</a>
 				    				<c:choose>
@@ -260,7 +260,6 @@
 				    				</c:choose>
 									<a href="javascript:;" onclick="delUser('${user.id}')">删除</a>
 									</td>
-								</shiro:hasPermission>
                            </tr>
                            </c:forEach>
                            </tbody></table>
@@ -307,7 +306,9 @@
 		function delUser (id) {
 			if(confirm('确认删除该用户吗？')){
 				$.getJSON('${ctx}/sys/emp/empdelete?id=' + id)
-				window.location.reload();
+				setTimeout(function () {
+   					window.location.reload();
+   				},1000)
 			}
 		}
 		var ctxstatic = '${ctxStatic}';

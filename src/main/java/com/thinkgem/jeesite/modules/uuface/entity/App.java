@@ -19,7 +19,16 @@ public class App extends DataEntity<App> {
 	private String appid;		// 应用id
 	private String appkey;		// key
 	private String appsecret;		// 标识
+	private String type;		// 1是沃土，2是aiot
 	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public App() {
 		super();
 	}
